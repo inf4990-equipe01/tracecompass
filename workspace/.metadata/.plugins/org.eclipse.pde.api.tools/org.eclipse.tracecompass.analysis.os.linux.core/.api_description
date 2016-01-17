@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.eclipse.tracecompass.analysis.os.linux.core" modificationStamp="1052" version="1.2">
+    <package visibility="1">
+        <fragment handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.model"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.model{package-info.java[package-info" modificationStamp="1000" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.model{HostThread.java[HostThread" modificationStamp="1001" restrictions="0" visibility="0"/>
+    </package>
+    <package visibility="1">
+        <fragment handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.trace"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.trace{package-info.java[package-info" modificationStamp="986" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.trace{IKernelAnalysisEventLayout.java[IKernelAnalysisEventLayout" modificationStamp="987" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.trace{DefaultEventLayout.java[DefaultEventLayout" modificationStamp="984" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.trace{IKernelTrace.java[IKernelTrace" modificationStamp="985" restrictions="0" visibility="0"/>
+    </package>
+    <package visibility="1">
+        <fragment handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.cpuusage"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.cpuusage{KernelCpuUsageAnalysis.java[KernelCpuUsageAnalysis" modificationStamp="1009" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.cpuusage{package-info.java[package-info" modificationStamp="1010" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.cpuusage{KernelCpuUsageStateProvider.java[KernelCpuUsageStateProvider" modificationStamp="1011" restrictions="0" visibility="0"/>
+    </package>
+    <package visibility="1">
+        <fragment handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis{StateValues.java[StateValues" modificationStamp="997" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis{package-info.java[package-info" modificationStamp="991" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis{KernelThreadInformationProvider.java[KernelThreadInformationProvider" modificationStamp="989" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis{Attributes.java[Attributes" modificationStamp="995" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis{Messages.java[Messages" modificationStamp="993" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis{KernelTidAspect.java[KernelTidAspect" modificationStamp="998" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis{KernelAnalysisModule.java[KernelAnalysisModule" modificationStamp="994" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis{LinuxValues.java[LinuxValues" modificationStamp="990" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis{ThreadPriorityAspect.java[ThreadPriorityAspect" modificationStamp="992" restrictions="0" visibility="0"/>
+    </package>
+    <package visibility="1">
+        <fragment handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.event.aspect"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.event.aspect{package-info.java[package-info" modificationStamp="1014" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.event.aspect{Messages.java[Messages" modificationStamp="1016" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.event.aspect{LinuxTidAspect.java[LinuxTidAspect" modificationStamp="1015" restrictions="0" visibility="0"/>
+    </package>
+    <package visibility="1">
+        <fragment handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.latency"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.latency{SystemCallLatencyAnalysis.java[SystemCallLatencyAnalysis" modificationStamp="1007" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.latency{SystemCall.java[SystemCall" modificationStamp="1004" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.latency{Messages.java[Messages" modificationStamp="1005" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.analysis.os.linux.core/src&lt;org.eclipse.tracecompass.analysis.os.linux.core.latency{package-info.java[package-info" modificationStamp="1003" restrictions="0" visibility="0"/>
+    </package>
+</component>

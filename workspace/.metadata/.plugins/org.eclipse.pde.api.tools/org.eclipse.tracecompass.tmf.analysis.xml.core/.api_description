@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.eclipse.tracecompass.tmf.analysis.xml.core" modificationStamp="6601" version="1.2">
+    <package visibility="1">
+        <fragment handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.module"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.module{IXmlStateSystemContainer.java[IXmlStateSystemContainer" modificationStamp="6572" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.module{XmlUtils.java[XmlUtils" modificationStamp="6564" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.module{Messages.java[Messages" modificationStamp="6570" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.module{ITmfXmlTopLevelElement.java[ITmfXmlTopLevelElement" modificationStamp="6569" restrictions="0" visibility="0"/>
+    </package>
+    <package visibility="1">
+        <fragment handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.stateprovider"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.stateprovider{XmlStateProvider.java[XmlStateProvider" modificationStamp="6597" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.stateprovider{TmfXmlStrings.java[TmfXmlStrings" modificationStamp="6596" restrictions="1" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.stateprovider{XmlStateSystemModule.java[XmlStateSystemModule" modificationStamp="6595" restrictions="0" visibility="0"/>
+    </package>
+    <package visibility="1">
+        <fragment handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model.readwrite"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model.readwrite{TmfXmlReadWriteModelFactory.java[TmfXmlReadWriteModelFactory" modificationStamp="6587" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model.readwrite{TmfXmlReadWriteStateAttribute.java[TmfXmlReadWriteStateAttribute" modificationStamp="6589" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model.readwrite{package-info.java[package-info" modificationStamp="6588" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model.readwrite{TmfXmlReadWriteStateValue.java[TmfXmlReadWriteStateValue" modificationStamp="6590" restrictions="0" visibility="0"/>
+    </package>
+    <package visibility="1">
+        <fragment handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model{ITmfXmlStateValue.java[ITmfXmlStateValue" modificationStamp="6592" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model{ITmfXmlModelFactory.java[ITmfXmlModelFactory" modificationStamp="6582" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model{TmfXmlStateAttribute.java[TmfXmlStateAttribute" modificationStamp="6581" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model{ITmfXmlStateAttribute.java[ITmfXmlStateAttribute" modificationStamp="6583" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model{TmfXmlLocation.java[TmfXmlLocation" modificationStamp="6593" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model{TmfXmlStateChange.java[TmfXmlStateChange" modificationStamp="6579" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model{TmfXmlCondition.java[TmfXmlCondition" modificationStamp="6591" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model{package-info.java[package-info" modificationStamp="6584" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model{TmfXmlEventHandler.java[TmfXmlEventHandler" modificationStamp="6580" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model{TmfXmlStateValue.java[TmfXmlStateValue" modificationStamp="6585" restrictions="0" visibility="0"/>
+    </package>
+    <package visibility="1">
+        <fragment handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model.readonly"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model.readonly{TmfXmlReadOnlyStateAttribute.java[TmfXmlReadOnlyStateAttribute" modificationStamp="6576" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model.readonly{package-info.java[package-info" modificationStamp="6577" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model.readonly{TmfXmlReadOnlyStateValue.java[TmfXmlReadOnlyStateValue" modificationStamp="6575" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.core/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.core.model.readonly{TmfXmlReadOnlyModelFactory.java[TmfXmlReadOnlyModelFactory" modificationStamp="6578" restrictions="0" visibility="0"/>
+    </package>
+</component>

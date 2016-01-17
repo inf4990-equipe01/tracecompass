@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="ImportTraceWizard">
+		<item value="true" key="ImportTraceWizardPage.import_from_directory"/>
+		<item value="true" key="ImportTraceWizardPage.import_preserve_folders_id"/>
+		<item value="true" key="ImportTraceWizardPage.import_unrecognized_traces_id"/>
+		<list key="ImportTraceWizardPage.import_root_directory_id">
+			<item value="/home/najib/Projet4/tracecompass/traces_test/tracecompass-test-traces-1.2.0/ctf/src/main/resources/kernel"/>
+			<item value="/home/najib/Projet4/tracecompass/gdbtrace/org.eclipse.tracecompass.gdbtrace.core.tests"/>
+		</list>
+		<list key="ImportTraceWizardPage.import_archive_file_name_id">
+		</list>
+	</section>
+	<section name="TmfTraceColumnManager">
+		<section name="column.order">
+			<item value="[0, 1, 2, 3, 4, 5, 6, 7]" key="org.eclipse.linuxtools.lttng2.kernel.tracetype"/>
+		</section>
+	</section>
+</section>

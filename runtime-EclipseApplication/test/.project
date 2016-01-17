@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>test</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.linuxtools.tmf.project.nature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>Traces/kernel</name>
+			<type>2</type>
+			<location>/home/najib/Projet4/tracecompass/traces_test/tracecompass-test-traces-1.2.0/ctf/src/main/resources/kernel</location>
+		</link>
+		<link>
+			<name>Traces/kernel/kernel_</name>
+			<type>1</type>
+			<location>/home/najib/Projet4/tracecompass/runtime-EclipseApplication/test/Traces/.bookmarks</location>
+		</link>
+	</linkedResources>
+</projectDescription>

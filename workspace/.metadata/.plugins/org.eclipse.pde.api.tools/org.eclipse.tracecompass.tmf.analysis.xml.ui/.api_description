@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.eclipse.tracecompass.tmf.analysis.xml.ui" modificationStamp="6714" version="1.2">
+    <package visibility="1">
+        <fragment handle="=org.eclipse.tracecompass.tmf.analysis.xml.ui/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.ui.module"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.ui/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.ui.module{TmfAnalysisModuleHelperXml.java[TmfAnalysisModuleHelperXml" modificationStamp="6700" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.ui/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.ui.module{XmlAnalysisModuleSource.java[XmlAnalysisModuleSource" modificationStamp="6702" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.ui/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.ui.module{TmfXmlAnalysisOutputSource.java[TmfXmlAnalysisOutputSource" modificationStamp="6703" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.ui/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.ui.module{TmfXmlViewOutput.java[TmfXmlViewOutput" modificationStamp="6701" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.ui/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.ui.module{Messages.java[Messages" modificationStamp="6704" restrictions="0" visibility="0"/>
+    </package>
+    <package visibility="1">
+        <fragment handle="=org.eclipse.tracecompass.tmf.analysis.xml.ui/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.ui.views.timegraph"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.ui/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.ui.views.timegraph{XmlEntry.java[XmlEntry" modificationStamp="6708" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.ui/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.ui.views.timegraph{XmlTimeGraphView.java[XmlTimeGraphView" modificationStamp="6711" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.ui/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.ui.views.timegraph{Messages.java[Messages" modificationStamp="6709" restrictions="0" visibility="0"/>
+        <type handle="=org.eclipse.tracecompass.tmf.analysis.xml.ui/src&lt;org.eclipse.tracecompass.tmf.analysis.xml.ui.views.timegraph{XmlPresentationProvider.java[XmlPresentationProvider" modificationStamp="6712" restrictions="0" visibility="0"/>
+    </package>
+</component>
