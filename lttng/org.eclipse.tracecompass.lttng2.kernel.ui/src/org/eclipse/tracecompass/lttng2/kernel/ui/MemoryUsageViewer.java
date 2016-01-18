@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.event.TmfEvent;
 import org.eclipse.tracecompass.tmf.core.request.ITmfEventRequest;
@@ -62,8 +63,19 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
                 public void handleSuccess() {
                     super.handleSuccess();
 
+
                     xVal = toArray(xValues);
                     yVal = toArray(yValues);
+
+                    // J'ai aucune idée pourquoi je fais ça...
+                    Display.getDefault().asyncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            setXAxis(xVal);
+                            setSeries("System usage", yVal);
+                            updateDisplay();
+                        }
+                    });
                 }
 
                 @Override
@@ -101,11 +113,6 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
 //        setSeries("Kernel mem usage", testY);
 //        updateDisplay();
 
-
-
-        setXAxis(xVal);
-        setSeries("System usage", yVal);
-        updateDisplay();
     }
 
 }
