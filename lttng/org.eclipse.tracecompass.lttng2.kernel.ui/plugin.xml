@@ -63,4 +63,14 @@
          </analysisId>
       </parameterProvider>
    </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            category="org.eclipse.linuxtools.lttng2.ui.views.category"
+            class="org.eclipse.tracecompass.lttng2.kernel.ui.MemoryUsageView"
+            id="org.eclipse.tracecompass.lttng2.kernel.ui.memoryusage"
+            name="Kernel Memory Usage "
+            restorable="true">
+      </view>
+   </extension>
 </plugin>
