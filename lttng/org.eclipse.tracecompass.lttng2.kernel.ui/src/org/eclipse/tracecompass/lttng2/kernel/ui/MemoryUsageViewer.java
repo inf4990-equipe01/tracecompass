@@ -4,6 +4,7 @@ package org.eclipse.tracecompass.lttng2.kernel.ui;
 //import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+//import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.tracecompass.lttng2.kernel.core.analysis.memory.KernelMemoryAnalysisModule;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
@@ -18,6 +19,8 @@ import org.eclipse.tracecompass.tmf.core.statesystem.TmfStateSystemAnalysisModul
 //import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimeRange;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
+//import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
+//import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 import org.eclipse.tracecompass.tmf.ui.viewers.xycharts.linecharts.TmfCommonXLineChartViewer;
 
 public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
@@ -37,10 +40,11 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
 
             fModule = TmfTraceUtils.getAnalysisModuleOfClass(trace, TmfStateSystemAnalysisModule.class, KernelMemoryAnalysisModule.ID);
             if (fModule == null) {
+                System.out.println("fModule KernelMem non trouve");
                 return;
             }
+            //ss = TmfStateSystemAnalysisModule.getStateSystem(trace, KernelMemoryAnalysisModule.ID);
             fModule.schedule();
-
 
 //            //TEST----------------------
 //            TmfEventRequest req = new TmfEventRequest(TmfEvent.class,
@@ -106,11 +110,9 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
 
     @Override
     protected void updateData(long start, long end, int nb, IProgressMonitor monitor) {
-        System.out.println("test1");
         if (getTrace() == null || fModule == null) {
             return;
         }
-        System.out.println("test2");
         fModule.waitForInitialization();
         ITmfStateSystem ss = fModule.getStateSystem();
         /* Don't wait for the module completion, when it's ready, we'll know */
