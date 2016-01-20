@@ -32,6 +32,7 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
      */
     public KernelMemoryStateProvider(@NonNull LttngKernelTrace trace) {
         super(trace, "Kernel:Memory"); //$NON-NLS-1$
+        System.out.println("Appel au contructeur de KernelMemoryStateProvider"); //$NON-NLS-1$
     }
 
     @Override
@@ -52,11 +53,11 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
     @Override
     protected void eventHandle(@NonNull ITmfEvent event) {
         String name = event.getName();
-
+        System.out.println("eventHandle KMSP"); //$NON-NLS-1$
         long inc;
-        if (name.equals("kmem_mm_page_alloc")) {
+        if (name.equals("kmem_mm_page_alloc")) { //$NON-NLS-1$
             inc = PAGE_SIZE;
-        } else if (name.equals("kmem_mm_page_free")) {
+        } else if (name.equals("kmem_mm_page_free")) { //$NON-NLS-1$
             inc = -PAGE_SIZE;
         } else {
             return;
@@ -67,7 +68,7 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
             ITmfStateSystemBuilder ss = checkNotNull(getStateSystemBuilder());
             long ts = event.getTimestamp().getValue();
 
-            int testQuark = ss.getQuarkAbsoluteAndAdd("TestKernelMemory");
+            int testQuark = ss.getQuarkAbsoluteAndAdd("TestKernelMemory"); //$NON-NLS-1$
 
             ITmfStateValue prevMem = ss.queryOngoingState(testQuark);
             if (prevMem.isNull()) {

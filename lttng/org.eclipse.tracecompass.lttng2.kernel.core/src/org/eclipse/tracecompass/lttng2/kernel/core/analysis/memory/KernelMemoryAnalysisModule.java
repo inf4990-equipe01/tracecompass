@@ -5,8 +5,10 @@ import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.internal.lttng2.kernel.core.analysis.memory.KernelMemoryStateProvider;
 import org.eclipse.tracecompass.lttng2.kernel.core.trace.LttngKernelTrace;
+import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
 import org.eclipse.tracecompass.tmf.core.statesystem.ITmfStateProvider;
 import org.eclipse.tracecompass.tmf.core.statesystem.TmfStateSystemAnalysisModule;
+import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 
 /**
  * @author sam
@@ -22,11 +24,23 @@ public class KernelMemoryAnalysisModule extends TmfStateSystemAnalysisModule {
 
     @Override
     protected @NonNull ITmfStateProvider createStateProvider() {
+        System.out.println("CreateStateProvider");
         return new KernelMemoryStateProvider(checkNotNull(getTrace()));
     }
 
     @Override
     protected LttngKernelTrace getTrace() {
         return (LttngKernelTrace) super.getTrace();
+    }
+
+    @Override
+    public boolean setTrace(ITmfTrace trace) throws TmfAnalysisException {
+        if (!(trace instanceof LttngKernelTrace)) {
+            return false;
+        }
+
+        boolean traceIsSet = super.setTrace(trace);
+
+        return traceIsSet;
     }
 }
