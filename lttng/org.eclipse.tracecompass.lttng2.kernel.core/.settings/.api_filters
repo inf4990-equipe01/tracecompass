@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.eclipse.tracecompass.lttng2.kernel.core" version="2">
+    <resource path="src/org/eclipse/tracecompass/lttng2/kernel/core/analysis/memory/KernelMemoryAnalysisModule.java" type="org.eclipse.tracecompass.lttng2.kernel.core.analysis.memory.KernelMemoryAnalysisModule">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.eclipse.tracecompass.lttng2.kernel.core.analysis.memory.KernelMemoryAnalysisModule"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>
