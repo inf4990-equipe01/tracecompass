@@ -4,6 +4,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.tracecompass.tmf.ui.viewers.xycharts.TmfXYChartViewer;
 import org.eclipse.tracecompass.tmf.ui.views.TmfChartView;
 
+/**
+ * @author mahdi
+ *
+ */
 public class MemoryUsageView extends TmfChartView {
     /** ID string */
     public static final String ID = "org.eclipse.linuxtools.lttng2.kernel.memoryusage"; //$NON-NLS-1$
