@@ -7,6 +7,7 @@ package org.eclipse.tracecompass.internal.lttng2.kernel.core.analysis.memory;
  * @author Matthew Khouzam
  * @author Geneviève Bastien
  * @author Mahdi Zolnouri
+ * @since 2.0
  */
 @SuppressWarnings("nls")
 public interface KernelMemoryStrings {

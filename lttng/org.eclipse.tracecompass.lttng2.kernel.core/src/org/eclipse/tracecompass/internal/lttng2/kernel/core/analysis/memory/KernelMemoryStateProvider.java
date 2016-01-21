@@ -8,6 +8,7 @@ import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 
 /**
  * @author mahdi
+ * @since 2.0
  *
  */
 public class KernelMemoryStateProvider extends AbstractTmfStateProvider{
