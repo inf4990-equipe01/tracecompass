@@ -32,7 +32,6 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
      */
     public KernelMemoryStateProvider(@NonNull LttngKernelTrace trace) {
         super(trace, "Kernel:Memory"); //$NON-NLS-1$
-        System.out.println("Appel au contructeur de KernelMemoryStateProvider"); //$NON-NLS-1$
     }
 
     @Override
@@ -53,7 +52,6 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
     @Override
     protected void eventHandle(@NonNull ITmfEvent event) {
         String name = event.getName();
-        System.out.println("eventHandle KMSP"); //$NON-NLS-1$
         long inc;
         if (name.equals("kmem_mm_page_alloc")) { //$NON-NLS-1$
             inc = PAGE_SIZE;
