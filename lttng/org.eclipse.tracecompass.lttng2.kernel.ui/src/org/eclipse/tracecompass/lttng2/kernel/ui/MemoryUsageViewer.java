@@ -137,7 +137,7 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
             Integer testQuark;
             try {
                 testQuark = ss.getQuarkAbsolute("TestKernelMemory");
-                yvalue = ss.querySingleState((long) x, testQuark.intValue()).getStateValue().unboxLong() / BYTES_TO_KB;
+                yvalue = ss.querySingleState((long) x + this.getTimeOffset(), testQuark.intValue()).getStateValue().unboxLong() / BYTES_TO_KB;
                 values[i] = yvalue;
             } catch (AttributeNotFoundException e) {
                 // TODO Auto-generated catch block

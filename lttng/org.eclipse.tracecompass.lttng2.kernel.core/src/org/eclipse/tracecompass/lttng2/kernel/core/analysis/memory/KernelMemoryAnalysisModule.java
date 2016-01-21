@@ -24,7 +24,6 @@ public class KernelMemoryAnalysisModule extends TmfStateSystemAnalysisModule {
 
     @Override
     protected @NonNull ITmfStateProvider createStateProvider() {
-        System.out.println("CreateStateProvider");
         return new KernelMemoryStateProvider(checkNotNull(getTrace()));
     }
 
