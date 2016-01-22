@@ -3,6 +3,7 @@ package org.eclipse.tracecompass.internal.lttng2.kernel.core.analysis.memory;
 import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis.KernelTidAspect;
 import org.eclipse.tracecompass.lttng2.kernel.core.trace.LttngKernelTrace;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystemBuilder;
 import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundException;
@@ -52,6 +53,7 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
     @Override
     protected void eventHandle(@NonNull ITmfEvent event) {
         String name = event.getName();
+
         long inc;
         if (name.equals("kmem_mm_page_alloc")) { //$NON-NLS-1$
             inc = PAGE_SIZE;
@@ -61,22 +63,30 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
             return;
         }
 
-
         try {
             ITmfStateSystemBuilder ss = checkNotNull(getStateSystemBuilder());
             long ts = event.getTimestamp().getValue();
 
-            int testQuark = ss.getQuarkAbsoluteAndAdd("TestKernelMemory"); //$NON-NLS-1$
+            // !!! Ce n'est pas tout les event page_alloc/page_free qui ont un thread ID... Pourquoi??
+            Integer tidField = KernelTidAspect.INSTANCE.resolve(event);
+            String tid;
+            if (tidField == null) {
+                tid = "other";
+            } else {
+                tid = tidField.toString();
+            }
 
-            ITmfStateValue prevMem = ss.queryOngoingState(testQuark);
+            int tidQuark = ss.getQuarkAbsoluteAndAdd(tid);
+            int tidMemQuark = ss.getQuarkRelativeAndAdd(tidQuark, "kmem_allocation");
+
+            ITmfStateValue prevMem = ss.queryOngoingState(tidMemQuark);
             if (prevMem.isNull()) {
                 prevMem = TmfStateValue.newValueLong(0);
             }
 
             long prevMemValue = prevMem.unboxLong();
             prevMemValue += inc;
-            ss.modifyAttribute(ts, TmfStateValue.newValueLong(prevMemValue), testQuark);
-
+            ss.modifyAttribute(ts, TmfStateValue.newValueLong(prevMemValue), tidMemQuark);
 
         } catch (AttributeNotFoundException e) {
             // TODO Auto-generated catch block
