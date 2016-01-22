@@ -1,5 +1,7 @@
 package org.eclipse.tracecompass.lttng2.kernel.ui;
 
+import java.util.List;
+
 //import java.util.ArrayList;
 //import java.util.List;
 
@@ -63,29 +65,40 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
 
         ss.waitUntilBuilt();
 
-        double yvalue = 0.0;
-        double[] values = new double[xvalues.length];
-        for (int i = 0; i < xvalues.length; i++) {
-            if (monitor.isCanceled()) {
-                return;
-            }
-            double x = xvalues[i];
+        try {
+            List<Integer> tidQuarks = ss.getSubAttributes(-1, false);
+            for (int quark : tidQuarks) {
 
-            Integer testQuark;
-            try {
-                testQuark = ss.getQuarkAbsolute("TestKernelMemory");
-                yvalue = ss.querySingleState((long) x + this.getTimeOffset(), testQuark.intValue()).getStateValue().unboxLong();
-                values[i] = yvalue;
-            } catch (AttributeNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (StateSystemDisposedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                double yvalue = 0.0;
+                double[] values = new double[xvalues.length];
+                for (int i = 0; i < xvalues.length; i++) {
+                    if (monitor.isCanceled()) {
+                        return;
+                    }
+                    double x = xvalues[i];
+
+                    try {
+                        Integer memQuark = ss.getQuarkRelative(quark, "kmem_allocation");
+                        yvalue = ss.querySingleState((long) x + this.getTimeOffset(), memQuark.intValue()).getStateValue().unboxLong();
+                        values[i] = yvalue;
+                    } catch (AttributeNotFoundException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    } catch (StateSystemDisposedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+                setSeries(ss.getAttributeName(quark), values);
+                updateDisplay();
+
             }
+        } catch (AttributeNotFoundException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
         }
-        setSeries("Kernel mem usage", values);
-        updateDisplay();
+
+
     }
 
 }
