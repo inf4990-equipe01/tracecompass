@@ -22,6 +22,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis.KernelTidAspect;
 import org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis.ThreadPriorityAspect;
 import org.eclipse.tracecompass.analysis.os.linux.core.trace.IKernelAnalysisEventLayout;
@@ -33,6 +34,7 @@ import org.eclipse.tracecompass.internal.lttng2.kernel.core.trace.layout.Lttng27
 import org.eclipse.tracecompass.internal.lttng2.kernel.core.trace.layout.Lttng28EventLayout;
 import org.eclipse.tracecompass.internal.lttng2.kernel.core.trace.layout.LttngEventLayout;
 import org.eclipse.tracecompass.internal.lttng2.kernel.core.trace.layout.PerfEventLayout;
+import org.eclipse.tracecompass.lttng2.kernel.core.trace.layout.ILttngKernelEventLayout;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.event.aspect.ITmfEventAspect;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
@@ -97,7 +99,23 @@ public class LttngKernelTrace extends CtfTmfTrace implements IKernelTrace {
     public LttngKernelTrace() {
         super();
     }
+    private @Nullable ILttngKernelEventLayout fLayout = null;
 
+    /**
+     * Get the event layout to use with this trace. This normally depends on the
+     * tracer's version.
+     *
+     * @return The event layout
+     * @since 2.0
+     */
+
+    public @NonNull ILttngKernelEventLayout getEventLayout() {
+        ILttngKernelEventLayout layout = fLayout;
+        if (layout == null) {
+            throw new IllegalStateException("Cannot get the layout of a non-initialized trace!"); //$NON-NLS-1$
+        }
+        return layout;
+    }
     @Override
     public @NonNull IKernelAnalysisEventLayout getKernelEventLayout() {
         OriginTracer tracer = fOriginTracer;
