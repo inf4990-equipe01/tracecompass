@@ -1,5 +1,9 @@
 package org.eclipse.tracecompass.lttng2.kernel.ui;
 
+import java.text.DecimalFormat;
+import java.text.FieldPosition;
+import java.text.Format;
+import java.text.ParsePosition;
 import java.util.List;
 
 //import java.util.ArrayList;
@@ -8,6 +12,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 //import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.tracecompass.internal.lttng2.kernel.ui.Activator;
 import org.eclipse.tracecompass.lttng2.kernel.core.analysis.memory.KernelMemoryAnalysisModule;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
 import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundException;
@@ -24,13 +29,54 @@ import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 //import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 //import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 import org.eclipse.tracecompass.tmf.ui.viewers.xycharts.linecharts.TmfCommonXLineChartViewer;
+import org.swtchart.Chart;
 
 public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
+
+    private static final class MemoryFormat extends Format {
+        /**
+         *
+         */
+        private static final long serialVersionUID = 3934127385682676804L;
+        private static final String KB = "KB"; //$NON-NLS-1$
+        private static final String MB = "MB"; //$NON-NLS-1$
+        private static final String GB = "GB"; //$NON-NLS-1$
+        private static final String TB = "TB"; //$NON-NLS-1$
+        private static final long KILO = 1024;
+        private static final Format FORMAT = new DecimalFormat("#.###"); //$NON-NLS-1$
+
+        @Override
+        public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
+            if (obj instanceof Double) {
+                Double value = (Double) obj;
+                if (value == 0) {
+                    return toAppendTo.append("0"); //$NON-NLS-1$
+                }
+                if (value > KILO * KILO * KILO * KILO) {
+                    return toAppendTo.append(FORMAT.format(value / (KILO * KILO * KILO * KILO))).append(' ').append(TB);
+                }
+                if (value > KILO * KILO * KILO) {
+                    return toAppendTo.append(FORMAT.format(value / (KILO * KILO * KILO))).append(' ').append(GB);
+                }
+                if (value > KILO * KILO) {
+                    return toAppendTo.append(FORMAT.format(value / (KILO * KILO))).append(' ').append(MB);
+                }
+                return toAppendTo.append(FORMAT.format(value / (KILO))).append(' ').append(KB);
+            }
+            return toAppendTo;
+        }
+
+        @Override
+        public Object parseObject(String source, ParsePosition pos) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+    }
 
     private TmfStateSystemAnalysisModule fModule = null;
 
     public MemoryUsageViewer(Composite parent) {
-        super(parent, "Kernel Memory Usage", "Time", "Kb");
+        super(parent, Messages.MemoryUsageViewer_title, Messages.MemoryUsageViewer_xAxis, Messages.MemoryUsageViewer_yAxis);
     }
 
     @Override
@@ -40,11 +86,17 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
 
             fModule = TmfTraceUtils.getAnalysisModuleOfClass(trace, TmfStateSystemAnalysisModule.class, KernelMemoryAnalysisModule.ID);
             if (fModule == null) {
-                System.out.println("fModule KernelMem non trouve");
+                System.out.println("fModule KernelMem non trouve"); //$NON-NLS-1$
                 return;
             }
             fModule.schedule();
-
+            Chart chart = getSwtChart();
+            chart.getDisplay().asyncExec(new Runnable() {
+                @Override
+                public void run() {
+                    chart.getAxisSet().getYAxis(0).getTick().setFormat(new MemoryFormat());
+                }
+            });
         }
     }
 
@@ -78,15 +130,11 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
                     double x = xvalues[i];
 
                     try {
-                        Integer memQuark = ss.getQuarkRelative(quark, "kmem_allocation");
+                        Integer memQuark = ss.getQuarkRelative(quark, "kmem_allocation"); //$NON-NLS-1$
                         yvalue = ss.querySingleState((long) x + this.getTimeOffset(), memQuark.intValue()).getStateValue().unboxLong();
                         values[i] = yvalue;
-                    } catch (AttributeNotFoundException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (StateSystemDisposedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                    } catch (AttributeNotFoundException | StateSystemDisposedException e) {
+                        Activator.getDefault().logError(e.getMessage(), e);
                     }
                 }
                 setSeries(ss.getAttributeName(quark), values);
@@ -94,10 +142,8 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
 
             }
         } catch (AttributeNotFoundException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            Activator.getDefault().logError(e1.getMessage(), e1);
         }
-
 
     }
 

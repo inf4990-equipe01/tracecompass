@@ -160,7 +160,8 @@ public interface IKernelAnalysisEventLayout {
      *
      * @return the event name
      */
-    @Nullable String eventStatedumpProcessState();
+    @Nullable
+    String eventStatedumpProcessState();
 
     /**
      * System call entry prefix, something like "sys_open" or just "sys".
@@ -225,7 +226,6 @@ public interface IKernelAnalysisEventLayout {
      */
     String eventSchedProcessWakeupNew();
 
-
     /**
      * Starting the high resolution timer
      * <p>
@@ -289,6 +289,27 @@ public interface IKernelAnalysisEventLayout {
      * @since 2.0
      */
     String eventHRTimerExpireExit();
+
+    /**
+     * The kernel just allocated a page of memory.
+     * <p>
+     * In Linux, this typically means a user space application just got 4k of
+     * ram.
+     *
+     * @return the event name
+     * @since 2.0
+     */
+    String eventKmemPageAlloc();
+
+    /**
+     * The kernel just deallocated a page of memory.
+     * <p>
+     * In Linux, this typically means 4k of ram was just freed
+     *
+     * @return the event name
+     * @since 2.0
+     */
+    String eventKmemPageFree();
 
     // ------------------------------------------------------------------------
     // Event field names
@@ -492,8 +513,8 @@ public interface IKernelAnalysisEventLayout {
     String fieldHRtimer();
 
     /**
-     * The field with the expires value. The expires field holds the expiry time.
-     * of the hrtimer.
+     * The field with the expires value. The expires field holds the expiry
+     * time. of the hrtimer.
      *
      * @return the name of the expires field
      * @since 2.0
@@ -501,8 +522,8 @@ public interface IKernelAnalysisEventLayout {
     String fieldHRtimerExpires();
 
     /**
-     * Gets the field name with the softexpires value. The softexpire value is the
-     * absolute earliest expiry time of the hrtimer.
+     * Gets the field name with the softexpires value. The softexpire value is
+     * the absolute earliest expiry time of the hrtimer.
      *
      * @return the name of the softexpires field
      * @since 2.0

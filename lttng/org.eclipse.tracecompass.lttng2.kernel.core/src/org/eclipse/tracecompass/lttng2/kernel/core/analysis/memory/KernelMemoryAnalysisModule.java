@@ -20,7 +20,7 @@ public class KernelMemoryAnalysisModule extends TmfStateSystemAnalysisModule {
     /**
      * Analysis ID, it should match that in the plugin.xml file
      */
-    public static final @NonNull String ID = "org.eclipse.linuxtools.lttng2.kernel.analysis.memory";
+    public static final @NonNull String ID = "org.eclipse.linuxtools.lttng2.kernel.analysis.memory"; //$NON-NLS-1$
 
     @Override
     protected @NonNull ITmfStateProvider createStateProvider() {
@@ -37,9 +37,6 @@ public class KernelMemoryAnalysisModule extends TmfStateSystemAnalysisModule {
         if (!(trace instanceof LttngKernelTrace)) {
             return false;
         }
-
-        boolean traceIsSet = super.setTrace(trace);
-
-        return traceIsSet;
+        return super.setTrace(trace);
     }
 }

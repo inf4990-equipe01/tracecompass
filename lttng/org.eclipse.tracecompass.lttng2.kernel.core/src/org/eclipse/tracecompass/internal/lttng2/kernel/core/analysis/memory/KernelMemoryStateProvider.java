@@ -4,6 +4,8 @@ import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis.KernelTidAspect;
+import org.eclipse.tracecompass.analysis.os.linux.core.trace.IKernelAnalysisEventLayout;
+import org.eclipse.tracecompass.internal.lttng2.kernel.core.Activator;
 import org.eclipse.tracecompass.lttng2.kernel.core.trace.LttngKernelTrace;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystemBuilder;
 import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundException;
@@ -25,6 +27,8 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
 
     private static final int PAGE_SIZE = 4096;
 
+    private @NonNull IKernelAnalysisEventLayout fLayout;
+
     /**
      * Constructor
      *
@@ -33,6 +37,7 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
      */
     public KernelMemoryStateProvider(@NonNull LttngKernelTrace trace) {
         super(trace, "Kernel:Memory"); //$NON-NLS-1$
+        fLayout = trace.getKernelEventLayout();
     }
 
     @Override
@@ -55,9 +60,9 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
         String name = event.getName();
 
         long inc;
-        if (name.equals("kmem_mm_page_alloc")) { //$NON-NLS-1$
+        if (name.equals(fLayout.eventKmemPageAlloc())) {
             inc = PAGE_SIZE;
-        } else if (name.equals("kmem_mm_page_free")) { //$NON-NLS-1$
+        } else if (name.equals(fLayout.eventKmemPageFree())) {
             inc = -PAGE_SIZE;
         } else {
             return;
@@ -67,17 +72,18 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
             ITmfStateSystemBuilder ss = checkNotNull(getStateSystemBuilder());
             long ts = event.getTimestamp().getValue();
 
-            // !!! Ce n'est pas tout les event page_alloc/page_free qui ont un thread ID... Pourquoi??
             Integer tidField = KernelTidAspect.INSTANCE.resolve(event);
             String tid;
             if (tidField == null) {
-                tid = "other";
+                // this can be due to a race if the state system is not yet
+                // built, or that the information is not yet available.
+                tid = "other"; //$NON-NLS-1$
             } else {
                 tid = tidField.toString();
             }
 
             int tidQuark = ss.getQuarkAbsoluteAndAdd(tid);
-            int tidMemQuark = ss.getQuarkRelativeAndAdd(tidQuark, "kmem_allocation");
+            int tidMemQuark = ss.getQuarkRelativeAndAdd(tidQuark, "kmem_allocation"); //$NON-NLS-1$
 
             ITmfStateValue prevMem = ss.queryOngoingState(tidMemQuark);
             if (prevMem.isNull()) {
@@ -89,8 +95,7 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
             ss.modifyAttribute(ts, TmfStateValue.newValueLong(prevMemValue), tidMemQuark);
 
         } catch (AttributeNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Activator.getDefault().logError(e.getMessage(), e);
         }
     }
 
