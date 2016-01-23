@@ -49,4 +49,14 @@ public class Lttng26EventLayout extends LttngEventLayout {
     public String eventSyscallExitPrefix() {
         return "syscall_exit_"; //$NON-NLS-1$
     }
+
+    @Override
+    public String eventKmemPageAlloc() {
+        return "kmem_mm_page_alloc"; //$NON-NLS-1$
+    }
+
+    @Override
+    public String eventKmemPageFree() {
+        return "kmem_mm_page_free"; //$NON-NLS-1$
+    }
 }
