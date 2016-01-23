@@ -1,3 +1,15 @@
+/**********************************************************************
+ * Copyright (c) 2016 Ericsson, École Polytechnique de Montréal
+ *
+ * All rights reserved. This program and the accompanying materials are
+ * made available under the terms of the Eclipse Public License v1.0 which
+ * accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Samuel Gagnon - Initial API and implementation
+ *   (SAMUEL : Do I put my name here like that?)
+ **********************************************************************/
 package org.eclipse.tracecompass.lttng2.kernel.ui;
 
 import java.text.DecimalFormat;
@@ -6,11 +18,7 @@ import java.text.Format;
 import java.text.ParsePosition;
 import java.util.List;
 
-//import java.util.ArrayList;
-//import java.util.List;
-
 import org.eclipse.core.runtime.IProgressMonitor;
-//import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.tracecompass.internal.lttng2.kernel.ui.Activator;
 import org.eclipse.tracecompass.lttng2.kernel.core.analysis.memory.KernelMemoryAnalysisModule;
@@ -18,19 +26,17 @@ import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
 import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundException;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
 import org.eclipse.tracecompass.tmf.core.statesystem.TmfStateSystemAnalysisModule;
-//import org.eclipse.swt.widgets.Display;
-//import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
-//import org.eclipse.tracecompass.tmf.core.event.TmfEvent;
-//import org.eclipse.tracecompass.tmf.core.request.ITmfEventRequest;
-//import org.eclipse.tracecompass.tmf.core.request.TmfEventRequest;
-//import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimeRange;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
-//import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
-//import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 import org.eclipse.tracecompass.tmf.ui.viewers.xycharts.linecharts.TmfCommonXLineChartViewer;
 import org.swtchart.Chart;
 
+/**
+ * Memory usage view
+ *
+ * @author Samuel Gagnon
+ *
+ */
 public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
 
     private static final class MemoryFormat extends Format {
@@ -75,6 +81,12 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
 
     private TmfStateSystemAnalysisModule fModule = null;
 
+    /**
+     * Constructor
+     *
+     * @param parent
+     *            parent view
+     */
     public MemoryUsageViewer(Composite parent) {
         super(parent, Messages.MemoryUsageViewer_title, Messages.MemoryUsageViewer_xAxis, Messages.MemoryUsageViewer_yAxis);
     }
@@ -86,7 +98,6 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
 
             fModule = TmfTraceUtils.getAnalysisModuleOfClass(trace, TmfStateSystemAnalysisModule.class, KernelMemoryAnalysisModule.ID);
             if (fModule == null) {
-                System.out.println("fModule KernelMem non trouve"); //$NON-NLS-1$
                 return;
             }
             fModule.schedule();

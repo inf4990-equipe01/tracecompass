@@ -1,3 +1,15 @@
+/**********************************************************************
+ * Copyright (c) 2016 Ericsson, École Polytechnique de Montréal
+ *
+ * All rights reserved. This program and the accompanying materials are
+ * made available under the terms of the Eclipse Public License v1.0 which
+ * accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Samuel Gagnon - Initial API and implementation
+ *   (SAMUEL : Do I put my name here like that?)
+ **********************************************************************/
 package org.eclipse.tracecompass.internal.lttng2.kernel.core.analysis.memory;
 
 import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
@@ -16,8 +28,8 @@ import org.eclipse.tracecompass.tmf.core.statesystem.AbstractTmfStateProvider;
 import org.eclipse.tracecompass.tmf.core.statesystem.ITmfStateProvider;
 
 /**
- * @author sam
- * @since 2.0 <<-- Pourquoi il faut que j'ajoute ça ? (Samuel)
+ * @author Samuel Gagnon
+ * @since 2.0
  *
  */
 public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
