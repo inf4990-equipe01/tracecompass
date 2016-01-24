@@ -23,7 +23,6 @@ package org.eclipse.tracecompass.tmf.ui.widgets.timegraph.widgets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -123,9 +122,6 @@ public class TimeGraphControl extends TimeGraphBaseControl
 
     private static final int MAX_LABEL_LENGTH = 256;
 
-    private static final int PPI = 72; // points per inch
-    private static final int DPI = Display.getDefault().getDPI().y;
-
     /** Resource manager */
     private LocalResourceManager fResourceManager = new LocalResourceManager(JFaceResources.getResources());
 
@@ -140,7 +136,8 @@ public class TimeGraphControl extends TimeGraphBaseControl
     private boolean fMouseOverSplitLine = false;
     private int fGlobalItemHeight = CUSTOM_ITEM_HEIGHT;
     private int fHeightAdjustment = 0;
-    private Map<Integer, Font> fFonts = new HashMap<>();
+    private int fInitialFontHeight;
+    private Font fFont;
     private boolean fBlendSubPixelEvents = false;
     private int fMinimumItemWidth = 0;
     private int fTopIndex = 0;
@@ -206,8 +203,8 @@ public class TimeGraphControl extends TimeGraphBaseControl
     public void dispose() {
         super.dispose();
         fResourceManager.dispose();
-        for (Font font : fFonts.values()) {
-            font.dispose();
+        if (fFont != null) {
+            fFont.dispose();
         }
     }
 
@@ -973,26 +970,50 @@ public class TimeGraphControl extends TimeGraphBaseControl
      *
      * @param zoomIn
      *            true to zoom in, false to zoom out
+     * @param adjustItems
+     *            true to adjust item heights, false to adjust font only
      * @since 2.0
      */
-    public void verticalZoom(boolean zoomIn) {
+    public void verticalZoom(boolean zoomIn, boolean adjustItems) {
         if (zoomIn) {
             fHeightAdjustment++;
         } else {
             fHeightAdjustment--;
         }
-        fItemData.refreshData();
+        FontData fontData = getFont().getFontData()[0];
+        if (fInitialFontHeight == 0) {
+            fInitialFontHeight = fontData.getHeight();
+        }
+        int height = Math.max(1, fInitialFontHeight + fHeightAdjustment);
+        fontData.setHeight(height);
+        if (fFont != null) {
+            fFont.dispose();
+        }
+        fFont = new Font(getDisplay(), fontData);
+        setFont(fFont);
+        if (adjustItems) {
+            fItemData.refreshData();
+        }
         redraw();
     }
 
     /**
      * Reset the vertical zoom to default.
      *
+     * @param adjustItems
+     *            true to reset item heights, false to reset font only
      * @since 2.0
      */
-    public void resetVerticalZoom() {
+    public void resetVerticalZoom(boolean adjustItems) {
         fHeightAdjustment = 0;
-        fItemData.refreshData();
+        if (fFont != null) {
+            fFont.dispose();
+            fFont = null;
+        }
+        setFont(null);
+        if (adjustItems) {
+            fItemData.refreshData();
+        }
         redraw();
     }
 
@@ -1754,14 +1775,14 @@ public class TimeGraphControl extends TimeGraphBaseControl
         if (item.fEntry.hasTimeEvents()) {
             gc.setClipping(new Rectangle(nameSpace, 0, bounds.width - nameSpace, bounds.height));
             fillSpace(rect, gc, selected);
-
-            int margins = getMarginForHeight(rect.height);
-            int height = rect.height - margins;
-            int topMargin = (margins + 1) / 2;
-            Rectangle stateRect = new Rectangle(rect.x, rect.y + topMargin, rect.width, height);
-
-            /* Set the font for this item */
-            setFontForHeight(height, gc);
+            /*
+             * State rectangle is smaller than item bounds. Use a margin height
+             * of 3 pixels, keep at least 3 pixels for the state, but not more
+             * than the item height. Favor the top margin for the remainder.
+             */
+            int height = Math.min(rect.height, Math.max(3, rect.height - 6));
+            int margin = (rect.height - height + 1) / 2;
+            Rectangle stateRect = new Rectangle(rect.x, rect.y + margin, rect.width, height);
 
             long maxDuration = (timeProvider.getTimeSpace() == 0) ? Long.MAX_VALUE : 1 * (time1 - time0) / timeProvider.getTimeSpace();
             Iterator<ITimeEvent> iterator = entry.getTimeEventsIterator(time0, time1, maxDuration);
@@ -1956,9 +1977,6 @@ public class TimeGraphControl extends TimeGraphBaseControl
             return;
         }
 
-        int height = bounds.height - getMarginForHeight(bounds.height);
-        setFontForHeight(height, gc);
-
         int leftMargin = MARGIN + item.fLevel * EXPAND_SIZE;
         if (item.fHasChildren) {
             gc.setForeground(getColorScheme().getFgColorGroup(false, false));
@@ -2126,34 +2144,6 @@ public class TimeGraphControl extends TimeGraphBaseControl
         gc.drawLine(rect.x, midy, rect.x + rect.width, midy);
     }
 
-    private static int getMarginForHeight(int height) {
-        /*
-         * State rectangle is smaller than the item bounds when height is > 4.
-         * Don't use any margin if the height is below or equal that threshold.
-         * Use a maximum of 6 pixels for both margins, otherwise try to use 13
-         * pixels for the state height, but with a minimum margin of 1.
-         */
-        final int MARGIN_THRESHOLD = 4;
-        final int PREFERRED_HEIGHT = 13;
-        final int MIN_MARGIN = 1;
-        final int MAX_MARGIN = 6;
-        return height <= MARGIN_THRESHOLD ? 0 :
-            Math.max(Math.min(height - PREFERRED_HEIGHT, MAX_MARGIN), MIN_MARGIN);
-    }
-
-    private void setFontForHeight(int pixels, GC gc) {
-        /* convert font height from pixels to points */
-        int height = Math.max(pixels * PPI / DPI, 1);
-        Font font = fFonts.get(height);
-        if (font == null) {
-            FontData fontData = gc.getFont().getFontData()[0];
-            fontData.setHeight(height);
-            font = new Font(gc.getDevice(), fontData);
-            fFonts.put(height, font);
-        }
-        gc.setFont(font);
-    }
-
     @Override
     public void keyTraversed(TraverseEvent e) {
         if ((e.detail == SWT.TRAVERSE_TAB_NEXT) || (e.detail == SWT.TRAVERSE_TAB_PREVIOUS)) {
@@ -2222,11 +2212,11 @@ public class TimeGraphControl extends TimeGraphBaseControl
             }
             idx = -1;
         } else if ((e.character == '+' || e.character == '=') && ((e.stateMask & SWT.CTRL) != 0)) {
-            verticalZoom(true);
+            verticalZoom(true, true);
         } else if (e.character == '-' && ((e.stateMask & SWT.CTRL) != 0)) {
-            verticalZoom(false);
+            verticalZoom(false, true);
         } else if (e.character == '0' && ((e.stateMask & SWT.CTRL) != 0)) {
-            resetVerticalZoom();
+            resetVerticalZoom(true);
         }
         if (idx >= 0) {
             selectItem(idx, false);
@@ -2673,9 +2663,9 @@ public class TimeGraphControl extends TimeGraphBaseControl
         }
         if (verticalZoom) {
             if (e.count > 0) {
-                verticalZoom(true);
+                verticalZoom(true, true);
             } else if (e.count < 0) {
-                verticalZoom(false);
+                verticalZoom(false, true);
             }
         } else if (horizontalZoom && fTimeProvider.getTime0() != fTimeProvider.getTime1()) {
             if (e.count > 0) {

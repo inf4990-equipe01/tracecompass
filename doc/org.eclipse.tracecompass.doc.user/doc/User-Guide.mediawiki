@@ -1430,6 +1430,15 @@ To refresh the remote host information, select any node in the tree of the Contr
 
 Upon successful operation, the tree in the Control View will be refreshed with the remote host configuration.
 
+=== Quantifing LTTng overhead (Calibrate) ===
+
+The LTTng calibrate command can be used to find out the combined average overhead of the LTTng tracer and the instrumentation mechanisms used. For now, the only calibration implemented is that of the kernel function
+instrumentation (kretprobes). To run the calibrate command, select the a domain (e.g. '''Kernel'''), click the right mouse button on the domain tree node. A context-sensitive menu will show. Select the '''Calibrate''' menu item.
+
+[[Image:images/LTTng2CalibrateAction.png]]
+
+Upon successful operation, the calibrate command is executed and relevant information is stored in the trace. Note: that the trace has to be active so that to command as any effect.
+
 === Importing Session Traces to a Tracing Project ===
 
 To import traces from a tracing session, select the relevant session and click on the '''Import''' Button. Alternatively, click the right mouse button on the session tree node and select the menu item '''Import...''' from the context-sensitive menu.
@@ -1474,7 +1483,7 @@ A new display will open for loading session profiles.
 
 [[Image:images/LTTng2LoadDialog.png]]
 
-By default the '''Local''' button and '''force''' buttons are selected and session profile files of the user's workspace will be listed. Select one or more profiles, update the '''force''' button if needed and then click '''Ok'''. This will upload the session profile files to the remote node. If a session profile file with the same name already exist on the remote node, it will be overwritten. If the '''force''' button is selected any existing session with a conflicting name will be destroyed and a new one will be created.
+By default the '''Local''' button and '''force''' buttons are selected and session profile files of the user's workspace will be listed. Select one or more profiles, update the '''force''' button if needed and then click '''Ok'''. This will upload the session profile files to the remote node. If a session profile file already exist on the remote node, the user will be prompted to skip or overwrite the existing profile file. If skipped, the operation will be cancelled. If the '''force''' button is selected any existing session with a conflicting name will be destroyed and a new one will be created.
 
 Alternatively, one can select the '''Remote''' button to list all available session profile files on the remote node. To load one of the remote session profiles, select one or more profiles, update the '''force''' button if needed and then click '''Ok'''.
 

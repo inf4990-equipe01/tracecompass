@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016 Ericsson
+ * Copyright (c) 2015 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v1.0 which
@@ -23,8 +23,17 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 
     private static final String BUNDLE_NAME = "org.eclipse.tracecompass.internal.analysis.os.linux.ui.views.latency.statistics.messages"; //$NON-NLS-1$
+
     /** Name of the system call level in statistics tree */
     public static String LatencyStatistics_SyscallLevelName;
+    /** Name of level column */
+    public static String SegmentStoreStatistics_LevelLabel;
+    /** Name of the minimum column */
+    public static String SegmentStoreStatistics_Statistics_MinLabel;
+    /** Name of maximum column */
+    public static String SegmentStoreStatistics_MaxLabel;
+    /** Name of average column */
+    public static String SegmentStoreStatistics_AverageLabel;
     /** Name of Total statistics */
     public static String LatencyStatistics_TotalLabel;
 

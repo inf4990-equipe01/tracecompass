@@ -293,7 +293,8 @@ public class EnableKernelEventComposite extends Composite implements IEnableKern
 
         if (fIsDynamicProbe) {
             String temp = fProbeEventNameText.getText();
-            if (temp.trim().isEmpty() ||
+            if (temp.isEmpty() ||
+                fProbeText.getText().matches("\\s*") || //$NON-NLS-1$
                 (!temp.matches("^[\\s]{0,}$") && !temp.matches("^[a-zA-Z0-9\\-\\_]{1,}$"))) { //$NON-NLS-1$ //$NON-NLS-2$
                 MessageDialog.openError(getShell(),
                         Messages.TraceControl_EnableEventsDialogTitle,
@@ -312,7 +313,8 @@ public class EnableKernelEventComposite extends Composite implements IEnableKern
         fFunctionString = null;
         if (fIsDynamicFunctionProbe) {
             String functionTemp = fFunctionEventNameText.getText();
-            if (functionTemp.trim().isEmpty() ||
+            if (functionTemp.isEmpty() ||
+                functionTemp.matches("\\s*") || //$NON-NLS-1$
                 (!functionTemp.matches("^[\\s]{0,}$") && !functionTemp.matches("^[a-zA-Z0-9\\-\\_]{1,}$"))) { //$NON-NLS-1$ //$NON-NLS-2$
                 MessageDialog.openError(getShell(),
                         Messages.TraceControl_EnableEventsDialogTitle,
@@ -331,7 +333,7 @@ public class EnableKernelEventComposite extends Composite implements IEnableKern
         if (fProviderGroup.isEventFilteringSupported(true)) {
             String tempFilter = fFilterText.getText();
 
-            if(!tempFilter.trim().isEmpty()) {
+            if(!tempFilter.isEmpty() && !tempFilter.matches("\\s*")) { //$NON-NLS-1$
                 fFilterExpression = tempFilter;
             }
         }

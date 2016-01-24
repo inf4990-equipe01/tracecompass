@@ -108,6 +108,9 @@ public final class Messages extends NLS {
     public static String TraceControl_AddContextJob;
     public static String TraceControl_AddContextFailure;
 
+    public static String TraceControl_AddCalibrateJob;
+    public static String TraceControl_AddCalibrateFailure;
+
     public static String TraceControl_RecordSnapshotJob;
     public static String TraceControl_RecordSnapshotFailure;
 
@@ -342,8 +345,6 @@ public final class Messages extends NLS {
 
     public static String TraceControl_DeleteProfileTitle;
     public static String TraceControl_DeleteQuery;
-
-    public static String TraceControl_DefaultEventFilterString;
 
     static {
         // initialize resource bundle

@@ -169,13 +169,27 @@ public class TimeGraphCombo extends Composite {
         protected TimeGraphControl createTimeGraphControl(Composite composite, TimeGraphColorScheme colors) {
             return new TimeGraphControl(composite, colors) {
                 @Override
-                public void verticalZoom(boolean zoomIn) {
-                    TimeGraphCombo.this.verticalZoom(zoomIn);
+                public void verticalZoom(boolean zoomIn, boolean adjustItems) {
+                    boolean changed = TimeGraphCombo.this.verticalZoom(zoomIn);
+                    if (changed) {
+                        /*
+                         * The time graph combo takes care of adjusting item
+                         * heights, only adjust the font in the time graph
+                         * control. Only do it if the time graph combo's tree
+                         * font has actually changed.
+                         */
+                        super.verticalZoom(zoomIn, false);
+                    }
                 }
 
                 @Override
-                public void resetVerticalZoom() {
+                public void resetVerticalZoom(boolean adjustItems) {
                     TimeGraphCombo.this.resetVerticalZoom();
+                    /*
+                     * The time graph combo takes care of resetting item
+                     * heights, only reset the font in the time graph control.
+                     */
+                    super.resetVerticalZoom(false);
                 }
             };
         }
@@ -700,12 +714,12 @@ public class TimeGraphCombo extends Composite {
         });
     }
 
-    private void verticalZoom(boolean zoomIn) {
+    private boolean verticalZoom(boolean zoomIn) {
         Tree tree = fTreeViewer.getTree();
         FontData fontData = tree.getFont().getFontData()[0];
         int height = fontData.getHeight() + (zoomIn ? 1 : -1);
         if (height <= 0) {
-            return;
+            return false;
         }
         fontData.setHeight(height);
         if (fTreeFont != null) {
@@ -718,6 +732,7 @@ public class TimeGraphCombo extends Composite {
         fTimeGraphViewer.setHeaderHeight(tree.getHeaderHeight());
         fTimeGraphViewer.setItemHeight(getItemHeight(tree, true));
         alignTreeItems(false);
+        return true;
     }
 
     private void resetVerticalZoom() {
@@ -878,7 +893,6 @@ public class TimeGraphCombo extends Composite {
         final Tree tree = fTreeViewer.getTree();
         for (String columnName : columnNames) {
             TreeColumn column = new TreeColumn(tree, SWT.LEFT);
-            column.setMoveable(true);
             column.setText(columnName);
             column.pack();
         }
@@ -1241,9 +1255,7 @@ public class TimeGraphCombo extends Composite {
                 if (SWT.getPlatform().equals("gtk")) { //$NON-NLS-1$
                     TreeItem topItem = tree.getTopItem();
                     tree.getDisplay().asyncExec(() -> {
-                        if (!tree.isDisposed() && !topItem.isDisposed()) {
-                            tree.setTopItem(topItem);
-                        }
+                        tree.setTopItem(topItem);
                     });
                 }
             }
