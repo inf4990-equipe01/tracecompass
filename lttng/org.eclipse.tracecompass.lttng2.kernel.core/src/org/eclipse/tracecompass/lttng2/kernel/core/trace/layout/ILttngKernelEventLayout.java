@@ -10,7 +10,7 @@
 package org.eclipse.tracecompass.lttng2.kernel.core.trace.layout;
 
 /**
- * This interface defines concepts exposed by liblttng-ust libraries and traces.
+ * This interface defines concepts exposed by liblttng-Kernel libraries and traces.
  * Actual implementations can differ between different versions of the tracer.
  *
  * @author Alexandre Montplaisir
@@ -24,42 +24,44 @@ public interface ILttngKernelEventLayout {
     // Event names
     // ------------------------------------------------------------------------
 
-    /* liblttng-ust-libc-wrapper events */
-    String eventLibcMalloc();
-    String eventLibcCalloc();
-    String eventLibcRealloc();
-    String eventLibcFree();
-    String eventLibcMemalign();
-    String eventLibcPosixMemalign();
-
-    /* liblttng-ust-dl events */
-    String eventDlOpen();
-    String eventDlClose();
-
-    /* liblttng-ust-cyg-profile(-fast) events */
-    String eventCygProfileFuncEntry();
-    String eventCygProfileFastFuncEntry();
-    String eventCygProfileFuncExit();
-    String eventCygProfileFastFuncExit();
-
-    // ------------------------------------------------------------------------
-    // Field names
-    // ------------------------------------------------------------------------
-
-    String fieldPtr();
-    String fieldNmemb();
-    String fieldSize();
-    String fieldOutPtr();
-    String fieldInPtr();
-
-    String fieldAddr();
-
-    // ------------------------------------------------------------------------
-    // Context field names
-    // ------------------------------------------------------------------------
-
-    String contextVpid();
+    String eventKmemMmPageAlloc();
+    String eventKmemMmPageFree();
+//    /* liblttng-ust-libc-wrapper events */
+//    String eventLibcMalloc();
+//    String eventLibcCalloc();
+//    String eventLibcRealloc();
+//    String eventLibcFree();
+//    String eventLibcMemalign();
+//    String eventLibcPosixMemalign();
+//
+//    /* liblttng-ust-dl events */
+//    String eventDlOpen();
+//    String eventDlClose();
+//
+//    /* liblttng-ust-cyg-profile(-fast) events */
+//    String eventCygProfileFuncEntry();
+//    String eventCygProfileFastFuncEntry();
+//    String eventCygProfileFuncExit();
+//    String eventCygProfileFastFuncExit();
+//
+//    // ------------------------------------------------------------------------
+//    // Field names
+//    // ------------------------------------------------------------------------
+//
+//    String fieldPtr();
+//    String fieldNmemb();
+//    String fieldSize();
+//    String fieldOutPtr();
+//    String fieldInPtr();
+//
+//    String fieldAddr();
+//
+//    // ------------------------------------------------------------------------
+//    // Context field names
+//    // ------------------------------------------------------------------------
+//
+//    String contextVpid();
     String contextVtid();
     String contextProcname();
-    String contextIp();
+//    String contextIp();
 }

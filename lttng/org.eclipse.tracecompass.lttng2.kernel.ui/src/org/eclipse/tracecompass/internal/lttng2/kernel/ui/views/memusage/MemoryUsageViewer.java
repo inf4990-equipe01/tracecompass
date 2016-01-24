@@ -39,7 +39,7 @@ import org.eclipse.tracecompass.tmf.ui.viewers.xycharts.linecharts.TmfCommonXLin
  * Memory usage view
  *
  * @author Matthew Khouzam
- * @author Mahdi
+ * @author Mahdi Zolnouri
  */
 @SuppressWarnings("restriction")
 public class MemoryUsageViewer extends TmfCommonXLineChartViewer {

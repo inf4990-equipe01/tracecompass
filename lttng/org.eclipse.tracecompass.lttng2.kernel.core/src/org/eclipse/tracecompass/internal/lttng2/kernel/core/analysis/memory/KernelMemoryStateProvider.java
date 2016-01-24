@@ -15,7 +15,7 @@
 
 import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
 
-import java.util.HashMap;
+//import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -37,31 +37,25 @@ import org.eclipse.tracecompass.tmf.core.statesystem.ITmfStateProvider;
 import com.google.common.collect.ImmutableMap;
 
 /**
- * State provider to track the memory of the threads using the UST libc wrapper
+ * State provider to track the memory of the threads using the KERNEL libc wrapper
  * memory events.
  *
  * @author Matthew Khouzam
  * @author Geneviève Bastien
+ * @author Mahdi Zolnouri
  * @since 2.0
  */
 public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
 
     /* Version of this state provider */
     private static final int VERSION = 1;
+    private static final int PAGE_SIZE = 4096;
 
     private static final Long MINUS_ONE = Long.valueOf(-1);
-    private static final Long ZERO = Long.valueOf(0);
     private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 
-    private static final int MALLOC_INDEX = 1;
-    private static final int FREE_INDEX = 2;
-    private static final int CALLOC_INDEX = 3;
-    private static final int REALLOC_INDEX = 4;
-    private static final int MEMALIGN_INDEX = 5;
-    private static final int POSIX_MEMALIGN_INDEX = 6;
-
-    /** Map of a pointer to a memory zone to the size of the memory */
-    private final Map<Long, Long> fMemory = new HashMap<>();
+    private static final int KMEM_MM_PAGE_ALLOC_INDEX = 1;
+    private static final int KMEM_MM_PAGE_FREE_INDEX = 2;
 
     private final @NonNull ILttngKernelEventLayout fLayout;
     private final @NonNull Map<String, Integer> fEventNames;
@@ -73,19 +67,15 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
      *            trace
      */
     public KernelMemoryStateProvider(@NonNull LttngKernelTrace trace) {
-        super(trace, "Ust:Memory"); //$NON-NLS-1$
+        super(trace, "Kernel:Memory"); //$NON-NLS-1$
         fLayout = trace.getEventLayout();
         fEventNames = buildEventNames(fLayout);
     }
 
     private static @NonNull Map<String, Integer> buildEventNames(ILttngKernelEventLayout layout) {
         ImmutableMap.Builder<String, Integer> builder = ImmutableMap.builder();
-        builder.put(layout.eventLibcMalloc(), MALLOC_INDEX);
-        builder.put(layout.eventLibcFree(), FREE_INDEX);
-        builder.put(layout.eventLibcCalloc(), CALLOC_INDEX);
-        builder.put(layout.eventLibcRealloc(), REALLOC_INDEX);
-        builder.put(layout.eventLibcMemalign(), MEMALIGN_INDEX);
-        builder.put(layout.eventLibcPosixMemalign(), POSIX_MEMALIGN_INDEX);
+        builder.put(layout.eventKmemMmPageAlloc(), KMEM_MM_PAGE_ALLOC_INDEX);
+        builder.put(layout.eventKmemMmPageFree(), KMEM_MM_PAGE_FREE_INDEX);
         return checkNotNull(builder.build());
     }
 
@@ -96,65 +86,17 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
         int intIndex = (index == null ? -1 : index.intValue());
 
         switch (intIndex) {
-        case MALLOC_INDEX: {
-            Long ptr = (Long) event.getContent().getField(fLayout.fieldPtr()).getValue();
-            if (ZERO.equals(ptr)) {
-                return;
-            }
-            Long size = (Long) event.getContent().getField(fLayout.fieldSize()).getValue();
-            setMem(event, ptr, size);
+        case KMEM_MM_PAGE_ALLOC_INDEX: {
+            setMemory(event, PAGE_SIZE);
         }
             break;
-        case FREE_INDEX: {
-            Long ptr = (Long) event.getContent().getField(fLayout.fieldPtr()).getValue();
-            if (ZERO.equals(ptr)) {
-                return;
-            }
-            setMem(event, ptr, ZERO);
-        }
-            break;
-        case CALLOC_INDEX: {
-            Long ptr = (Long) event.getContent().getField(fLayout.fieldPtr()).getValue();
-            if (ZERO.equals(ptr)) {
-                return;
-            }
-            Long nmemb = (Long) event.getContent().getField(fLayout.fieldNmemb()).getValue();
-            Long size = (Long) event.getContent().getField(fLayout.fieldSize()).getValue();
-            setMem(event, ptr, size * nmemb);
-        }
-            break;
-        case REALLOC_INDEX: {
-            Long ptr = (Long) event.getContent().getField(fLayout.fieldPtr()).getValue();
-            if (ZERO.equals(ptr)) {
-                return;
-            }
-            Long newPtr = (Long) event.getContent().getField(fLayout.fieldInPtr()).getValue();
-            Long size = (Long) event.getContent().getField(fLayout.fieldSize()).getValue();
-            setMem(event, ptr, ZERO);
-            setMem(event, newPtr, size);
-        }
-            break;
-        case MEMALIGN_INDEX: {
-            Long ptr = (Long) event.getContent().getField(fLayout.fieldPtr()).getValue();
-            if (ZERO.equals(ptr)) {
-                return;
-            }
-            Long size = (Long) event.getContent().getField(fLayout.fieldSize()).getValue();
-            setMem(event, ptr, size);
-        }
-            break;
-        case POSIX_MEMALIGN_INDEX: {
-            Long ptr = (Long) event.getContent().getField(fLayout.fieldOutPtr()).getValue();
-            if (ZERO.equals(ptr)) {
-                return;
-            }
-            Long size = (Long) event.getContent().getField(fLayout.fieldSize()).getValue();
-            setMem(event, ptr, size);
+        case KMEM_MM_PAGE_FREE_INDEX: {
+            setMemory(event, -PAGE_SIZE);
         }
             break;
         default:
             /* Ignore other event types */
-            break;
+            return;
         }
 
     }
@@ -189,23 +131,12 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
         }
         return (String) field.getValue();
     }
-
-    private void setMem(ITmfEvent event, Long ptr, Long size) {
+    private void setMemory(ITmfEvent event, int size){
         ITmfStateSystemBuilder ss = checkNotNull(getStateSystemBuilder());
         long ts = event.getTimestamp().getValue();
         Long tid = getVtid(event);
+        Long memoryDiff = new Long(size);
 
-        Long memoryDiff = size;
-        /* Size is 0, it means it was deleted */
-        if (ZERO.equals(size)) {
-            Long memSize = fMemory.remove(ptr);
-            if (memSize == null) {
-                return;
-            }
-            memoryDiff = -memSize;
-        } else {
-            fMemory.put(ptr, size);
-        }
         try {
             int tidQuark = ss.getQuarkAbsoluteAndAdd(tid.toString());
             int tidMemQuark = ss.getQuarkRelativeAndAdd(tidQuark, KernelMemoryStrings.KERNEL_MEMORY_MEMORY_ATTRIBUTE);
@@ -231,7 +162,6 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
             ss.modifyAttribute(ts, TmfStateValue.newValueLong(prevMemValue), tidMemQuark);
         } catch (AttributeNotFoundException | TimeRangeException | StateValueTypeException e) {
             throw new IllegalStateException(e);
-        }
+       }
     }
-
 }

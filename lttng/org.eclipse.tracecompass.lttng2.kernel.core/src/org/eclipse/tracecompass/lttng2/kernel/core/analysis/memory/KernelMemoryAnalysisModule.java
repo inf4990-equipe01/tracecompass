@@ -22,8 +22,11 @@ import com.google.common.collect.ImmutableSet;
 
 
 /**
- * @author mahdi
+ * This analysis build a state system from the libc memory instrumentation on a
+ * KERNEL trace
  *
+ * @author Geneviève Bastien
+ * @author Mahdi Zolnouri
  */
 public class KernelMemoryAnalysisModule extends TmfStateSystemAnalysisModule {
     public static final @NonNull String ID = "org.eclipse.linuxtools.lttng2.kernel.analysis.memory"; //$NON-NLS-1$
@@ -60,12 +63,8 @@ public class KernelMemoryAnalysisModule extends TmfStateSystemAnalysisModule {
     private static Set<TmfAnalysisRequirement> requirementsForTrace(LttngKernelTrace trace){
         ILttngKernelEventLayout layout = trace.getEventLayout();
         Set<String> requiredEvents = ImmutableSet.of(
-                layout.eventLibcMalloc(),
-                layout.eventLibcFree(),
-                layout.eventLibcCalloc(),
-                layout.eventLibcRealloc(),
-                layout.eventLibcMemalign(),
-                layout.eventLibcPosixMemalign()
+                layout.eventKmemMmPageAlloc(),
+                layout.eventKmemMmPageFree()
                 );
         /* Initialize the requirements for the analysis: domain and events */
         TmfAnalysisRequirement eventsReq = new TmfAnalysisRequirement(SessionConfigStrings.CONFIG_ELEMENT_EVENT, requiredEvents, ValuePriorityLevel.MANDATORY);

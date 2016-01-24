@@ -1,7 +1,7 @@
 package org.eclipse.tracecompass.internal.lttng2.kernel.core.analysis.memory;
 
 /**
- * Strings for the memory usage state system using the LTTng UST libc
+ * Strings for the memory usage state system using the LTTng Kernel libc
  * instrumentation
  *
  * @author Matthew Khouzam
@@ -12,7 +12,7 @@ package org.eclipse.tracecompass.internal.lttng2.kernel.core.analysis.memory;
 @SuppressWarnings("nls")
 public interface KernelMemoryStrings {
     /** Memory state system attribute name */
-    String KERNEL_MEMORY_MEMORY_ATTRIBUTE = "Memory";
+    String KERNEL_MEMORY_MEMORY_ATTRIBUTE = "kmem_allocation"; //"Memory";
 
     /** Procname state system attribute name */
     String KERNEL_MEMORY_PROCNAME_ATTRIBUTE = "Procname";

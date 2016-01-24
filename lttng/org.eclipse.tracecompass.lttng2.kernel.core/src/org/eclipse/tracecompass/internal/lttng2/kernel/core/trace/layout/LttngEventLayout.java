@@ -18,6 +18,7 @@ import java.util.Collection;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.analysis.os.linux.core.trace.IKernelAnalysisEventLayout;
+import org.eclipse.tracecompass.lttng2.kernel.core.trace.layout.ILttngKernelEventLayout;
 
 import com.google.common.collect.ImmutableList;
 
@@ -32,9 +33,14 @@ import com.google.common.collect.ImmutableList;
  * @author Alexandre Montplaisir
  */
 @SuppressWarnings("nls")
-public class LttngEventLayout implements IKernelAnalysisEventLayout {
+public class LttngEventLayout implements IKernelAnalysisEventLayout, ILttngKernelEventLayout {
 
     /* Event names */
+    private static final String KMEM_MM_PAGE_ALLOC = "kmem_mm_page_alloc";
+    private static final String KMEM_MM_PAGE_FREE = "kmem_mm_page_free";
+
+
+
     private static final String IRQ_HANDLER_ENTRY = "irq_handler_entry";
     private static final String IRQ_HANDLER_EXIT = "irq_handler_exit";
     private static final String SOFTIRQ_ENTRY = "softirq_entry";
@@ -88,8 +94,9 @@ public class LttngEventLayout implements IKernelAnalysisEventLayout {
     private static final String HRTIMER_NOW = "now";
     private static final String HRTIMER_SOFT_EXPIRES = "softexpires";
 
+
     /** All instances are the same. Only provide a static instance getter */
-    protected LttngEventLayout() {
+    public LttngEventLayout() {
     }
 
     private static final IKernelAnalysisEventLayout INSTANCE = new LttngEventLayout();
@@ -345,6 +352,30 @@ public class LttngEventLayout implements IKernelAnalysisEventLayout {
     @Override
     public String fieldHRtimerNow() {
         return HRTIMER_NOW;
+    }
+
+    @Override
+    public @NonNull String eventKmemMmPageAlloc() {
+        // TODO Auto-generated method stub
+        return KMEM_MM_PAGE_ALLOC;
+    }
+
+    @Override
+    public @NonNull String eventKmemMmPageFree() {
+        // TODO Auto-generated method stub
+        return KMEM_MM_PAGE_FREE;
+    }
+
+    @Override
+    public @NonNull String contextVtid() {
+        // TODO Auto-generated method stub
+        return "context._vtid";
+    }
+
+    @Override
+    public @NonNull String contextProcname() {
+        // TODO Auto-generated method stub
+        return "context._procname";
     }
 
 }

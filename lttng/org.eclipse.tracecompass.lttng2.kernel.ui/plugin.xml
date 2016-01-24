@@ -48,7 +48,7 @@
             category="org.eclipse.linuxtools.lttng2.ui.views.category"
             class="org.eclipse.tracecompass.internal.lttng2.kernel.ui.views.memusage.MemoryUsageView"
             id="org.eclipse.linuxtools.lttng2.kernel.kernelmemoryusage"
-            name="%KernelMemoryUsage.view.name"
+            name="Kernel Memory Usage"
             restorable="true">
       </view>
    </extension>

@@ -9,6 +9,7 @@
  * Contributors:
  *   Alexandre Montplaisir - Initial API and implementation
  *   Matthew Khouzam - Improved validation
+ *   Mahdi Zolnouri - Add functionality
  ******************************************************************************/
 
 package org.eclipse.tracecompass.lttng2.kernel.core.trace;
@@ -75,6 +76,7 @@ public class LttngKernelTrace extends CtfTmfTrace implements IKernelTrace {
      * Event aspects available for all Lttng Kernel traces
      */
     private static final @NonNull Collection<ITmfEventAspect> LTTNG_KERNEL_ASPECTS;
+    private @Nullable ILttngKernelEventLayout lttngEventLayou = null;
 
     static {
         ImmutableSet.Builder<ITmfEventAspect> builder = ImmutableSet.builder();
@@ -99,19 +101,19 @@ public class LttngKernelTrace extends CtfTmfTrace implements IKernelTrace {
     public LttngKernelTrace() {
         super();
     }
-    private @Nullable ILttngKernelEventLayout fLayout = null;
 
     /**
      * Get the event layout to use with this trace. This normally depends on the
      * tracer's version.
      *
-     * @return The event layout
+     * @return The lttng event layout
      * @since 2.0
      */
 
     public @NonNull ILttngKernelEventLayout getEventLayout() {
-        ILttngKernelEventLayout layout = fLayout;
-        if (layout == null) {
+        lttngEventLayou = new LttngEventLayout();
+        ILttngKernelEventLayout layout = lttngEventLayou;
+        if (layout.equals(null)) {
             throw new IllegalStateException("Cannot get the layout of a non-initialized trace!"); //$NON-NLS-1$
         }
         return layout;
