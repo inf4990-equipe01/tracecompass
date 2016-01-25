@@ -42,5 +42,10 @@
                class="org.eclipse.tracecompass.analysis.os.linux.core.trace.IKernelTrace">
          </tracetype>
       </module>
+      <module
+            analysis_module="org.eclipse.tracecompass.analysis.os.linux.core.kernelmemoryusage.KernelMemoryAnalysisModule"
+            id="org.eclipse.tracecompass.analysis.os.linux.core.module1"
+            name="%analysis.kernelmemoryusage">
+      </module>
    </extension>
 </plugin>

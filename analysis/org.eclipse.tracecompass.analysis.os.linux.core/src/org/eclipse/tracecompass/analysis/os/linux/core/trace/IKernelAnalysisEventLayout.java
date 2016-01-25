@@ -185,6 +185,15 @@ public interface IKernelAnalysisEventLayout {
     String eventSyscallExitPrefix();
 
     /**
+     * System call compatibility layer exit prefix, something like
+     * "compat_syscall_exit".
+     *
+     * @return the event name
+     * @since 2.0
+     */
+    String eventCompatSyscallExitPrefix();
+
+    /**
      * The scheduler replaced the current process image with a new one. The
      * process should also be renamed at this point. In windows, this is part of
      * the spawn process as well as fork.
@@ -280,6 +289,26 @@ public interface IKernelAnalysisEventLayout {
      * @since 2.0
      */
     String eventHRTimerExpireExit();
+    /**
+     * The kernel just allocated a page of memory.
+     * <p>
+     * In Linux, this typically means a user space application just got 4k of
+     * ram.
+     *
+     * @return the event name
+     * @since 2.0
+     */
+    String eventKmemPageAlloc();
+
+    /**
+     * The kernel just deallocated a page of memory.
+     * <p>
+     * In Linux, this typically means 4k of ram was just freed
+     *
+     * @return the event name
+     * @since 2.0
+     */
+    String eventKmemPageFree();
 
     // ------------------------------------------------------------------------
     // Event field names

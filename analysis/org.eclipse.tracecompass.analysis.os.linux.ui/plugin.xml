@@ -65,6 +65,13 @@
             name="%latency.density.view.name"
             restorable="true">
       </view>
+      <view
+            category="org.eclipse.linuxtools.tmf.ui.views.category"
+            class="org.eclipse.tracecompass.analysis.os.linux.ui.views.kernelmemoryusage.KernelMemoryUsageView"
+            id="org.eclipse.tracecompass.analysis.os.linux.ui.view1"
+            name="%KernelMemoryUsageView.name "
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.linuxtools.tmf.core.analysis">

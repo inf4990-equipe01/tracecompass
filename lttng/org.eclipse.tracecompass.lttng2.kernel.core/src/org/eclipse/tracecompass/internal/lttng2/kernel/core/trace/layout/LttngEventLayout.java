@@ -87,6 +87,8 @@ public class LttngEventLayout implements IKernelAnalysisEventLayout {
     private static final String HRTIMER_EXPIRES = "expires";
     private static final String HRTIMER_NOW = "now";
     private static final String HRTIMER_SOFT_EXPIRES = "softexpires";
+    private static final String KMEM_ALLOC = "kmem_kmalloc";
+    private static final String KMEM_FREE = "kmem_kfree";
 
     /** All instances are the same. Only provide a static instance getter */
     protected LttngEventLayout() {
@@ -183,6 +185,31 @@ public class LttngEventLayout implements IKernelAnalysisEventLayout {
     @Override
     public String eventSyscallExitPrefix() {
         return SYSCALL_EXIT_PREFIX;
+    }
+
+    @Override
+    public String eventCompatSyscallExitPrefix() {
+        /*
+         * In LTTng < 2.6, the same generic event name is used for both standard
+         * and compat syscalls.
+         */
+        return SYSCALL_EXIT_PREFIX;
+    }
+
+    /**
+     * @since 2.0
+     */
+    @Override
+    public String eventKmemPageAlloc() {
+        return KMEM_ALLOC;
+    }
+
+    /**
+     * @since 2.0
+     */
+    @Override
+    public String eventKmemPageFree() {
+        return KMEM_FREE;
     }
 
     // ------------------------------------------------------------------------
