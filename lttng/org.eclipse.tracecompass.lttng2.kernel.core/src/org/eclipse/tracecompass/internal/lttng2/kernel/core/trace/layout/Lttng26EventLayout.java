@@ -53,7 +53,9 @@ public class Lttng26EventLayout extends LttngEventLayout {
     @Override
     public String eventCompatSyscallExitPrefix() {
         return "compat_syscall_exit_"; //$NON-NLS-1$
+    }
 
+    @Override
     public String eventKmemPageAlloc() {
         return "kmem_mm_page_alloc"; //$NON-NLS-1$
     }
