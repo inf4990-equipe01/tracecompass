@@ -9,20 +9,15 @@
  * Contributors:
  *   Matthew Khouzam - Initial API and implementation
  *   Geneviève Bastien - Memory is per thread and only total is kept
+ *   Mahdi Zolnouri - Use base class for Kernel Memory Usage View
  **********************************************************************/
-
- package org.eclipse.tracecompass.internal.lttng2.kernel.core.analysis.memory;
+package org.eclipse.tracecompass.internal.lttng2.kernel.core.analysis.memory;
 
 import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
-
-//import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.lttng2.kernel.core.trace.LttngKernelTrace;
-
 import org.eclipse.tracecompass.lttng2.kernel.core.trace.layout.ILttngKernelEventLayout;
-
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystemBuilder;
 import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundException;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateValueTypeException;
@@ -33,12 +28,11 @@ import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEventField;
 import org.eclipse.tracecompass.tmf.core.statesystem.AbstractTmfStateProvider;
 import org.eclipse.tracecompass.tmf.core.statesystem.ITmfStateProvider;
-
 import com.google.common.collect.ImmutableMap;
 
 /**
- * State provider to track the memory of the threads using the KERNEL libc wrapper
- * memory events.
+ * State provider to track the memory of the threads using the KERNEL libc
+ * wrapper memory events.
  *
  * @author Matthew Khouzam
  * @author Geneviève Bastien
@@ -50,13 +44,10 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
     /* Version of this state provider */
     private static final int VERSION = 1;
     private static final int PAGE_SIZE = 4096;
-
     private static final Long MINUS_ONE = Long.valueOf(-1);
     private static final String EMPTY_STRING = ""; //$NON-NLS-1$
-
     private static final int KMEM_MM_PAGE_ALLOC_INDEX = 1;
     private static final int KMEM_MM_PAGE_FREE_INDEX = 2;
-
     private final @NonNull ILttngKernelEventLayout fLayout;
     private final @NonNull Map<String, Integer> fEventNames;
 
@@ -84,7 +75,6 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
         String name = event.getName();
         Integer index = fEventNames.get(name);
         int intIndex = (index == null ? -1 : index.intValue());
-
         switch (intIndex) {
         case KMEM_MM_PAGE_ALLOC_INDEX: {
             setMemory(event, PAGE_SIZE);
@@ -98,7 +88,6 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
             /* Ignore other event types */
             return;
         }
-
     }
 
     @Override
@@ -131,7 +120,8 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
         }
         return (String) field.getValue();
     }
-    private void setMemory(ITmfEvent event, int size){
+
+    private void setMemory(ITmfEvent event, int size) {
         ITmfStateSystemBuilder ss = checkNotNull(getStateSystemBuilder());
         long ts = event.getTimestamp().getValue();
         Long tid = getVtid(event);
@@ -162,6 +152,6 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
             ss.modifyAttribute(ts, TmfStateValue.newValueLong(prevMemValue), tidMemQuark);
         } catch (AttributeNotFoundException | TimeRangeException | StateValueTypeException e) {
             throw new IllegalStateException(e);
-       }
+        }
     }
 }

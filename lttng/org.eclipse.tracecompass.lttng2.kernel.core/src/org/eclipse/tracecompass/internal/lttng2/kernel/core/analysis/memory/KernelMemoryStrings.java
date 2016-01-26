@@ -12,7 +12,7 @@ package org.eclipse.tracecompass.internal.lttng2.kernel.core.analysis.memory;
 @SuppressWarnings("nls")
 public interface KernelMemoryStrings {
     /** Memory state system attribute name */
-    String KERNEL_MEMORY_MEMORY_ATTRIBUTE = "kmem_allocation"; //"Memory";
+    String KERNEL_MEMORY_MEMORY_ATTRIBUTE = "kmem_allocation"; // "Memory";
 
     /** Procname state system attribute name */
     String KERNEL_MEMORY_PROCNAME_ATTRIBUTE = "Procname";

@@ -3,10 +3,10 @@ package org.eclipse.tracecompass.internal.lttng2.kernel.ui.views.memusage;
 import org.eclipse.osgi.util.NLS;
 
 /**
- * Translatable strings for the ust memory usage view
+ * Translatable strings for the kernel memory usage view
  *
  * @author Geneviève Bastien
- * @author mahdi
+ * @author Mahdi Zolnouri
  */
 public class Messages extends NLS {
     private static final String BUNDLE_NAME = "org.eclipse.tracecompass.internal.lttng2.kernel.ui.views.memusage.messages"; //$NON-NLS-1$

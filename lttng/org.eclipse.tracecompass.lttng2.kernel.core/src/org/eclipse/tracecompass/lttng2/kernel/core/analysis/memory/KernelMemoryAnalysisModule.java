@@ -2,11 +2,9 @@ package org.eclipse.tracecompass.lttng2.kernel.core.analysis.memory;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-
 import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
 import static org.eclipse.tracecompass.common.core.NonNullUtils.nullToEmptyString;
 import java.util.Set;
-
 import org.eclipse.tracecompass.internal.lttng2.kernel.core.analysis.memory.KernelMemoryStateProvider;
 import org.eclipse.tracecompass.lttng2.control.core.session.SessionConfigStrings;
 import org.eclipse.tracecompass.lttng2.kernel.core.trace.LttngKernelTrace;
@@ -20,7 +18,6 @@ import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 
 import com.google.common.collect.ImmutableSet;
 
-
 /**
  * This analysis build a state system from the libc memory instrumentation on a
  * KERNEL trace
@@ -31,11 +28,8 @@ import com.google.common.collect.ImmutableSet;
 public class KernelMemoryAnalysisModule extends TmfStateSystemAnalysisModule {
     public static final @NonNull String ID = "org.eclipse.linuxtools.lttng2.kernel.analysis.memory"; //$NON-NLS-1$
 
-
     /** The analysis's requirements. Only set after the trace is set. */
     private @Nullable Set<TmfAnalysisRequirement> fAnalysisRequirements;
-
-
 
     @Override
     protected @NonNull ITmfStateProvider createStateProvider() {
@@ -43,29 +37,29 @@ public class KernelMemoryAnalysisModule extends TmfStateSystemAnalysisModule {
         return new KernelMemoryStateProvider(checkNotNull(getTrace()));
     }
 
-
     @Override
-    public boolean setTrace(ITmfTrace trace) throws TmfAnalysisException{
-        if(!(trace instanceof LttngKernelTrace)){
+    public boolean setTrace(ITmfTrace trace) throws TmfAnalysisException {
+        if (!(trace instanceof LttngKernelTrace)) {
             return false;
         }
         fAnalysisRequirements = requirementsForTrace((LttngKernelTrace) trace);
         boolean traceIsSet = super.setTrace(trace);
-        if(!traceIsSet){
+        if (!traceIsSet) {
             fAnalysisRequirements = null;
         }
         return traceIsSet;
     }
+
     @Override
-    protected LttngKernelTrace getTrace(){
+    protected LttngKernelTrace getTrace() {
         return (LttngKernelTrace) super.getTrace();
     }
-    private static Set<TmfAnalysisRequirement> requirementsForTrace(LttngKernelTrace trace){
+
+    private static Set<TmfAnalysisRequirement> requirementsForTrace(LttngKernelTrace trace) {
         ILttngKernelEventLayout layout = trace.getEventLayout();
         Set<String> requiredEvents = ImmutableSet.of(
                 layout.eventKmemMmPageAlloc(),
-                layout.eventKmemMmPageFree()
-                );
+                layout.eventKmemMmPageFree());
         /* Initialize the requirements for the analysis: domain and events */
         TmfAnalysisRequirement eventsReq = new TmfAnalysisRequirement(SessionConfigStrings.CONFIG_ELEMENT_EVENT, requiredEvents, ValuePriorityLevel.MANDATORY);
         /*
@@ -77,10 +71,11 @@ public class KernelMemoryAnalysisModule extends TmfStateSystemAnalysisModule {
 
         /* The domain type of the analysis */
         TmfAnalysisRequirement domainReq = new TmfAnalysisRequirement(SessionConfigStrings.CONFIG_ELEMENT_DOMAIN);
-        domainReq.addValue(SessionConfigStrings.CONFIG_DOMAIN_TYPE_UST, ValuePriorityLevel.MANDATORY);
+        domainReq.addValue(SessionConfigStrings.CONFIG_DOMAIN_TYPE_KERNEL, ValuePriorityLevel.MANDATORY);
 
         return checkNotNull(ImmutableSet.of(domainReq, eventsReq));
     }
+
     @Override
     public Iterable<TmfAnalysisRequirement> getAnalysisRequirements() {
         Set<TmfAnalysisRequirement> reqs = fAnalysisRequirements;
@@ -89,8 +84,5 @@ public class KernelMemoryAnalysisModule extends TmfStateSystemAnalysisModule {
         }
         return reqs;
     }
-
-
-
 
 }

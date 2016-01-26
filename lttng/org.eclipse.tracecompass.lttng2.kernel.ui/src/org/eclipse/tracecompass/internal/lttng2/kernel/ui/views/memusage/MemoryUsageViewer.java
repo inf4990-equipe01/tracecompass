@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2014 Ericsson, École Polytechnique de Montréal
+ * Copyright (c) 2014, 2016 Ericsson, École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v1.0 which
@@ -9,16 +9,15 @@
  * Contributors:
  *   Bernd Hufmann - Initial API and implementation
  *   Geneviève Bastien - Create and use base class for XY plots
+ *   Mahdi Zolnouri - Use base class for Kernel memory usage view
  **********************************************************************/
 
 package org.eclipse.tracecompass.internal.lttng2.kernel.ui.views.memusage;
 
 import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.tracecompass.internal.lttng2.kernel.core.analysis.memory.KernelMemoryStrings;
@@ -36,7 +35,7 @@ import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 import org.eclipse.tracecompass.tmf.ui.viewers.xycharts.linecharts.TmfCommonXLineChartViewer;
 
 /**
- * Memory usage view
+ * Kernel Memory usage view
  *
  * @author Matthew Khouzam
  * @author Mahdi Zolnouri
@@ -45,13 +44,10 @@ import org.eclipse.tracecompass.tmf.ui.viewers.xycharts.linecharts.TmfCommonXLin
 public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
 
     private TmfStateSystemAnalysisModule fModule = null;
-
     private final Map<Integer, double[]> fYValues = new HashMap<>();
     private final Map<Integer, Integer> fMemoryQuarks = new HashMap<>();
     private final Map<Integer, String> fSeriesName = new HashMap<>();
-
     private static final int BYTES_TO_KB = 1024;
-
     // Timeout between updates in the updateData thread
     private static final long BUILD_UPDATE_TIMEOUT = 500;
 
@@ -85,7 +81,9 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
             }
             fModule.waitForInitialization();
             ITmfStateSystem ss = fModule.getStateSystem();
-            /* Don't wait for the module completion, when it's ready, we'll know */
+            /*
+             * Don't wait for the module completion, when it's ready, we'll know
+             */
             if (ss == null) {
                 return;
             }
@@ -165,5 +163,4 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
             /* State system is closing down, no point continuing */
         }
     }
-
 }

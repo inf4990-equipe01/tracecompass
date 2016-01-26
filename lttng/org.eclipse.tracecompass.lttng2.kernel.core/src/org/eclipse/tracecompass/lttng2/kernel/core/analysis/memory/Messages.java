@@ -1,15 +1,27 @@
+/*******************************************************************************
+ * Copyright (c) 2014, 2016 École Polytechnique de Montréal
+ *
+ * All rights reserved. This program and the accompanying materials are
+ * made available under the terms of the Eclipse Public License v1.0 which
+ * accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Guilliano Molaire - Initial API and implementation
+ *   Mahdi Zolnouri - Modify for it to be adapted with Kernel.
+ *******************************************************************************/
 package org.eclipse.tracecompass.lttng2.kernel.core.analysis.memory;
 
 import org.eclipse.osgi.util.NLS;
 
 /**
- * Message bundle for the ust memory analysis module
+ * Message bundle for the kernel memory analysis module
  *
  * @author Guilliano Molaire
  * @since 2.0
  */
 public class Messages extends NLS {
-    private static final String BUNDLE_NAME = "org.eclipse.tracecompass.lttng2.ust.core.analysis.memory.messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "org.eclipse.tracecompass.lttng2.kernel.core.analysis.memory.messages"; //$NON-NLS-1$
 
     /** Information regarding events loading prior to the analysis execution */
     public static String KernelMemoryAnalysisModule_EventsLoadingInformation;
