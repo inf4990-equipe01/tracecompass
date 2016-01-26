@@ -37,14 +37,13 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.RewriteCardinalityException;
-import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.ctf.parser.CTFLexer;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.ctf.parser.CTFParser.parse_return;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CtfAntlrException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IOStructGen;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.exceptions.CtfAntlrException;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.exceptions.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.trace.Utils;
 
 /**
@@ -59,9 +58,6 @@ public class Metadata {
     // ------------------------------------------------------------------------
     // Constants
     // ------------------------------------------------------------------------
-
-    private static final Charset ASCII_CHARSET = Charset.forName("ASCII"); //$NON-NLS-1$
-
     private static final String TEXT_ONLY_METADATA_HEADER_PREFIX = "/* CTF"; //$NON-NLS-1$
 
     private static final int PREVALIDATION_SIZE = 8;
@@ -158,7 +154,10 @@ public class Metadata {
         try (FileInputStream fis = new FileInputStream(getMetadataPath());
                 FileChannel metadataFileChannel = fis.getChannel();
                 /* Check if metadata is packet-based, if not it is text based */
-                Reader metadataTextInput = (isPacketBased(metadataFileChannel) ? readBinaryMetaData(metadataFileChannel) : new FileReader(fis.getFD()));) {
+                Reader metadataTextInput =
+                        (isPacketBased(metadataFileChannel) ?
+                                readBinaryMetaData(metadataFileChannel) :
+                                new FileReader(getMetadataPath()));) {
 
             readMetaDataText(metadataTextInput);
 
@@ -191,14 +190,10 @@ public class Metadata {
     }
 
     /**
-     * Executes a weak validation of the metadata. It checks if a file with name
-     * metadata exists and if one of the following conditions are met:
-     * <ul>
-     * <li>For text-only metadata, the file starts with "/* CTF" (without the
-     * quotes)</li>
-     * <li>For packet-based metadata, the file starts with correct magic number
-     * </li>
-     * </ul>
+     * Executes a weak validation of the metadata. It checks if a file with
+     * name metadata exists and if one of the following conditions are met:
+     * - For text-only metadata, the file starts with "/* CTF" (without the quotes)
+     * - For packet-based metadata, the file starts with correct magic number
      *
      * @param path
      *            path to CTF trace directory
@@ -224,9 +219,10 @@ public class Metadata {
                     return true;
                 }
                 bb.position(0);
+                Charset forName = Charset.forName("ASCII"); //$NON-NLS-1$
                 byte bytes[] = new byte[PREVALIDATION_SIZE];
                 bb.get(bytes);
-                String text = new String(bytes, ASCII_CHARSET);
+                String text = new String(bytes, forName);
                 return text.startsWith(TEXT_ONLY_METADATA_HEADER_PREFIX);
             } catch (IOException e) {
                 throw new CTFException(e.getMessage(), e);
@@ -261,7 +257,7 @@ public class Metadata {
         CommonTree tree = createAST(metadataTextInput);
 
         /* Generate IO structures (declarations) */
-        fTreeParser = new IOStructGen(tree, NonNullUtils.checkNotNull(fTrace));
+        fTreeParser = new IOStructGen(tree, fTrace);
         fTreeParser.generate();
         /* store locally in case of concurrent modification */
         ByteOrder detectedByteOrder = getDetectedByteOrder();
@@ -361,7 +357,7 @@ public class Metadata {
     private String getMetadataPath() {
         /* Path of metadata file = trace directory path + metadata filename */
         if (fTrace.getTraceDirectory() == null) {
-            return ""; //$NON-NLS-1$
+            return new String();
         }
         return fTrace.getTraceDirectory().getPath()
                 + Utils.SEPARATOR + METADATA_FILENAME;
@@ -381,7 +377,7 @@ public class Metadata {
      */
     private MetadataPacketHeader readMetadataPacket(
             FileChannel metadataFileChannel, StringBuffer metadataText)
-                    throws CTFException {
+            throws CTFException {
         /* Allocate a ByteBuffer for the header */
         ByteBuffer headerByteBuffer = ByteBuffer.allocate(METADATA_PACKET_HEADER_SIZE);
 
@@ -444,7 +440,7 @@ public class Metadata {
         payloadByteBuffer.get(payloadByteArray, 0, payloadSize);
 
         /* Convert the byte array to a String */
-        String str = new String(payloadByteArray, 0, payloadSize, ASCII_CHARSET);
+        String str = new String(payloadByteArray, 0, payloadSize);
 
         /* Append it to the existing metadata */
         metadataText.append(str);
@@ -517,9 +513,8 @@ public class Metadata {
 
     /**
      * Copies the metadata file to a destination directory.
-     *
      * @param path
-     *            the destination directory
+     *             the destination directory
      * @return the path to the target file
      * @throws IOException
      *             if an error occurred

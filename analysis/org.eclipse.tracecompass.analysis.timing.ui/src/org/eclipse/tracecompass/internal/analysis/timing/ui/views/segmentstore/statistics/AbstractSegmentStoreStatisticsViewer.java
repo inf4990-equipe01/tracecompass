@@ -13,16 +13,15 @@ package org.eclipse.tracecompass.internal.analysis.timing.ui.views.segmentstore.
 
 import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
 
-import java.text.Format;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.tracecompass.analysis.timing.ui.views.segmentstore.SubSecondTimeWithUnitFormat;
 import org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.statistics.SegmentStoreStatistics;
 import org.eclipse.tracecompass.internal.analysis.timing.ui.Activator;
 import org.eclipse.tracecompass.tmf.core.analysis.TmfAbstractAnalysisModule;
@@ -34,25 +33,22 @@ import org.eclipse.tracecompass.tmf.ui.viewers.tree.TmfTreeColumnData;
 import org.eclipse.tracecompass.tmf.ui.viewers.tree.TmfTreeViewerEntry;
 
 /**
- * An abstract tree viewer implementation for displaying segment store
- * statistics
+ * An abstract tree viewer implementation for displaying segment store statistics
  *
  * @author Bernd Hufmann
  *
  */
 public abstract class AbstractSegmentStoreStatisticsViewer extends AbstractTmfTreeViewer {
 
-    private static final Format FORMATTER = new SubSecondTimeWithUnitFormat();
+    private static final NumberFormat FORMATTER = checkNotNull(NumberFormat.getNumberInstance(Locale.getDefault()));
 
-    @Nullable
-    private TmfAbstractAnalysisModule fModule;
+    @Nullable private TmfAbstractAnalysisModule fModule;
 
     private static final String[] COLUMN_NAMES = new String[] {
             checkNotNull(Messages.SegmentStoreStatistics_LevelLabel),
             checkNotNull(Messages.SegmentStoreStatistics_Statistics_MinLabel),
             checkNotNull(Messages.SegmentStoreStatistics_MaxLabel),
-            checkNotNull(Messages.SegmentStoreStatistics_AverageLabel),
-            checkNotNull(Messages.SegmentStoreStatisticsViewer_StandardDeviation)
+            checkNotNull(Messages.SegmentStoreStatistics_AverageLabel)
     };
 
     /**
@@ -71,7 +67,7 @@ public abstract class AbstractSegmentStoreStatisticsViewer extends AbstractTmfTr
 
         @Override
         public String getColumnText(@Nullable Object element, int columnIndex) {
-            String value = ""; //$NON-NLS-1$
+            String value = "";  //$NON-NLS-1$
             if (element instanceof HiddenTreeViewerEntry) {
                 if (columnIndex == 0) {
                     value = ((HiddenTreeViewerEntry) element).getName();
@@ -88,8 +84,6 @@ public abstract class AbstractSegmentStoreStatisticsViewer extends AbstractTmfTr
                         value = String.valueOf(toFormattedString(entry.getEntry().getMax()));
                     } else if (columnIndex == 3) {
                         value = String.valueOf(toFormattedString(entry.getEntry().getAverage()));
-                    } else if (columnIndex == 4) {
-                        value = String.valueOf(toFormattedString(entry.getEntry().getStdDev()));
                     }
                 }
             }
@@ -102,16 +96,13 @@ public abstract class AbstractSegmentStoreStatisticsViewer extends AbstractTmfTr
      *
      * @return the statistics analysis module
      */
-    @Nullable
-    protected abstract TmfAbstractAnalysisModule createStatisticsAnalysiModule();
+    @Nullable protected abstract TmfAbstractAnalysisModule createStatisticsAnalysiModule();
 
     /**
      * Gets the statistics analysis module
-     *
      * @return the statistics analysis module
      */
-    @Nullable
-    public TmfAbstractAnalysisModule getStatisticsAnalysisModule() {
+    @Nullable public TmfAbstractAnalysisModule getStatisticsAnalysisModule() {
         return fModule;
     }
 
@@ -124,7 +115,6 @@ public abstract class AbstractSegmentStoreStatisticsViewer extends AbstractTmfTr
                 /* All columns are sortable */
                 List<@Nullable TmfTreeColumnData> columns = new ArrayList<>();
                 TmfTreeColumnData column = new TmfTreeColumnData(COLUMN_NAMES[0]);
-                column.setAlignment(SWT.RIGHT);
                 column.setComparator(new ViewerComparator() {
                     @Override
                     public int compare(@Nullable Viewer viewer, @Nullable Object e1, @Nullable Object e2) {
@@ -141,7 +131,6 @@ public abstract class AbstractSegmentStoreStatisticsViewer extends AbstractTmfTr
                 });
                 columns.add(column);
                 column = new TmfTreeColumnData(COLUMN_NAMES[1]);
-                column.setAlignment(SWT.RIGHT);
                 column.setComparator(new ViewerComparator() {
                     @Override
                     public int compare(@Nullable Viewer viewer, @Nullable Object e1, @Nullable Object e2) {
@@ -158,7 +147,6 @@ public abstract class AbstractSegmentStoreStatisticsViewer extends AbstractTmfTr
                 });
                 columns.add(column);
                 column = new TmfTreeColumnData(COLUMN_NAMES[2]);
-                column.setAlignment(SWT.RIGHT);
                 column.setComparator(new ViewerComparator() {
                     @Override
                     public int compare(@Nullable Viewer viewer, @Nullable Object e1, @Nullable Object e2) {
@@ -175,7 +163,6 @@ public abstract class AbstractSegmentStoreStatisticsViewer extends AbstractTmfTr
                 });
                 columns.add(column);
                 column = new TmfTreeColumnData(COLUMN_NAMES[3]);
-                column.setAlignment(SWT.RIGHT);
                 column.setComparator(new ViewerComparator() {
                     @Override
                     public int compare(@Nullable Viewer viewer, @Nullable Object e1, @Nullable Object e2) {
@@ -191,30 +178,13 @@ public abstract class AbstractSegmentStoreStatisticsViewer extends AbstractTmfTr
                     }
                 });
                 columns.add(column);
-                column = new TmfTreeColumnData(COLUMN_NAMES[4]);
-                column.setAlignment(SWT.RIGHT);
-                column.setComparator(new ViewerComparator() {
-                    @Override
-                    public int compare(@Nullable Viewer viewer, @Nullable Object e1, @Nullable Object e2) {
-                        if ((e1 == null) || (e2 == null)) {
-                            return 0;
-                        }
 
-                        SegmentStoreStatisticsEntry n1 = (SegmentStoreStatisticsEntry) e1;
-                        SegmentStoreStatisticsEntry n2 = (SegmentStoreStatisticsEntry) e2;
-
-                        return Double.compare(n1.getEntry().getStdDev(), n2.getEntry().getStdDev());
-
-                    }
-                });
-                columns.add(column);
-                column = new TmfTreeColumnData(""); //$NON-NLS-1$
-                columns.add(column);
                 return columns;
             }
 
         };
     }
+
 
     @Override
     public void initializeDataSource() {
@@ -241,8 +211,7 @@ public abstract class AbstractSegmentStoreStatisticsViewer extends AbstractTmfTr
      * @return formatted value
      */
     protected static String toFormattedString(double value) {
-        // The cast to long is needed because the formatter cannot truncate the
-        // number.
+        // The cast to long is needed because the formatter cannot truncate the number.
         String percentageString = checkNotNull(String.format("%s", FORMATTER.format(value))); //$NON-NLS-1$
         return percentageString;
     }

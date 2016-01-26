@@ -22,7 +22,7 @@
       <module
             analysis_module="org.eclipse.tracecompass.internal.lttng2.kernel.core.analysis.vm.module.VirtualMachineCpuAnalysis"
             automatic="false"
-            id="org.eclipse.tracecompass.lttng2.analysis.vm.core.VirtualMachineAnalysisModule"
+            id="lttng2.analysis.vm.core.VirtualMachineAnalysisModule"
             name="Virtual Machine Analysis">
             <tracetype
                   applies="true"
@@ -37,6 +37,11 @@
          <tracetype
                class="org.eclipse.tracecompass.lttng2.kernel.core.trace.LttngKernelTrace">
          </tracetype>
+      </module>
+      <module
+      		analysis_module="org.eclipse.tracecompass.lttng2.kernel.core.KernelMemoryAnalysisModule"
+      		id="org.eclipse.linuxtools.lttng2.kernel.analysis.memory"
+      		name="Kernel Memory">
       </module>
    </extension>
 </plugin>

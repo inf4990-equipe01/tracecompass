@@ -8,4 +8,11 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/org/eclipse/tracecompass/tmf/ui/views/TmfView.java" type="org.eclipse.tracecompass.tmf.ui.views.TmfView">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="handleSuccess()"/>
+            </message_arguments>
+        </filter>
+    </resource>
 </component>

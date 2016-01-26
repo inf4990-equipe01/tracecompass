@@ -44,11 +44,6 @@ public class HistoryTreeStub extends HistoryTree {
         super(conf);
     }
 
-    @Override
-    public List<HTNode> getLatestBranch() {
-        return checkNotNull(super.getLatestBranch());
-    }
-
     /**
      * Get the latest leaf of the tree
      *

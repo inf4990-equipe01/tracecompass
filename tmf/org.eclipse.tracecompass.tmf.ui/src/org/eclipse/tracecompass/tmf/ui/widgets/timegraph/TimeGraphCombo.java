@@ -878,7 +878,6 @@ public class TimeGraphCombo extends Composite {
         final Tree tree = fTreeViewer.getTree();
         for (String columnName : columnNames) {
             TreeColumn column = new TreeColumn(tree, SWT.LEFT);
-            column.setMoveable(true);
             column.setText(columnName);
             column.pack();
         }

@@ -32,8 +32,6 @@ public class Messages extends NLS {
     public static String SegmentStoreStatistics_MaxLabel;
     /** Name of average column */
     public static String SegmentStoreStatistics_AverageLabel;
-    /** Name of average column */
-    public static String SegmentStoreStatisticsViewer_StandardDeviation;
 
     static {
         // initialize resource bundle
