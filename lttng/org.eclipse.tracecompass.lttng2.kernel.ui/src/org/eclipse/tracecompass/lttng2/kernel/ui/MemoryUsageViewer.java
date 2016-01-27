@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2016 Ericsson, École Polytechnique de Montréal
+ * Copyright (c) 2016 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v1.0 which
@@ -7,8 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   Samuel Gagnon - Initial API and implementation
- *   (SAMUEL : Do I put my name here like that?)
+ *   Samuel Gagnon - Initial implementation
  **********************************************************************/
 package org.eclipse.tracecompass.lttng2.kernel.ui;
 
@@ -23,8 +22,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.tracecompass.internal.lttng2.kernel.ui.Activator;
 import org.eclipse.tracecompass.lttng2.kernel.core.analysis.memory.KernelMemoryAnalysisModule;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
-import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundException;
+//import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundException;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
+import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
 import org.eclipse.tracecompass.tmf.core.statesystem.TmfStateSystemAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
@@ -81,6 +81,8 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
 
     private TmfStateSystemAnalysisModule fModule = null;
 
+    private long fSelectedThread = -1;
+
     /**
      * Constructor
      *
@@ -116,6 +118,7 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
         if (getTrace() == null || fModule == null) {
             return;
         }
+
         fModule.waitForInitialization();
         ITmfStateSystem ss = fModule.getStateSystem();
         /* Don't wait for the module completion, when it's ready, we'll know */
@@ -124,38 +127,61 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
         }
 
         double[] xvalues = getXAxis(start, end, nb);
+        if (xvalues.length == 0) {
+            return;
+        }
         setXAxis(xvalues);
 
         ss.waitUntilBuilt();
 
         try {
-            List<Integer> tidQuarks = ss.getSubAttributes(-1, false);
-            for (int quark : tidQuarks) {
+            /**
+             * For a given time range, we plot two lines representing the memory allocation.
+             * The first line represent the total memory allocation of every process.
+             * The second line represent the memory allocation of the selected thread.
+             */
+            double [] totalKernelMemoryValues = new double[xvalues.length];
+            double [] selectedThreadValues = new double[xvalues.length];
+            for(int i = 0; i < xvalues.length; i++) {
+                if (monitor.isCanceled()) {
+                    return;
+                }
 
-                double yvalue = 0.0;
-                double[] values = new double[xvalues.length];
-                for (int i = 0; i < xvalues.length; i++) {
-                    if (monitor.isCanceled()) {
-                        return;
-                    }
-                    double x = xvalues[i];
+                double x = xvalues[i];
+                long t = (long)x + this.getTimeOffset();
+                List<ITmfStateInterval> kernelState = ss.queryFullState(t);
+                for (ITmfStateInterval stateInterval : kernelState) {
+                    long value = stateInterval.getStateValue().unboxLong();
+                    totalKernelMemoryValues[i] += value;
 
-                    try {
-                        Integer memQuark = ss.getQuarkRelative(quark, "kmem_allocation"); //$NON-NLS-1$
-                        yvalue = ss.querySingleState((long) x + this.getTimeOffset(), memQuark.intValue()).getStateValue().unboxLong();
-                        values[i] = yvalue;
-                    } catch (AttributeNotFoundException | StateSystemDisposedException e) {
-                        Activator.getDefault().logError(e.getMessage(), e);
+                    int tidQuark = stateInterval.getAttribute();
+                    if (tidQuark == fSelectedThread) {
+                       selectedThreadValues[i] = value;
                     }
                 }
-                setSeries(ss.getAttributeName(quark), values);
-                updateDisplay();
-
             }
-        } catch (AttributeNotFoundException e1) {
-            Activator.getDefault().logError(e1.getMessage(), e1);
+
+            // TODO : Définir ces strings ailleurs
+            setSeries("Total", totalKernelMemoryValues); //$NON-NLS-1$
+            setSeries("SelectedThread", selectedThreadValues); //$NON-NLS-1$
+            updateDisplay();
+        } catch (StateSystemDisposedException e) {
+            Activator.getDefault().logError(e.getMessage(), e);
         }
 
+    }
+
+    /**
+     * Set the selected thread ID, which will be graphed in this viewer
+     *
+     * @param tid
+     *            The selected thread ID
+     */
+    public void setSelectedThread(long tid) {
+        cancelUpdate();
+        deleteSeries(Long.toString(fSelectedThread));
+        fSelectedThread = tid;
+        updateContent();
     }
 
 }

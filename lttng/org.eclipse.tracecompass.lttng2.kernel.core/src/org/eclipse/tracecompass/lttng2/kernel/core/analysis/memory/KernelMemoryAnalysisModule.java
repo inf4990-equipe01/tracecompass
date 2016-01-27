@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2016 Ericsson, École Polytechnique de Montréal
+ * Copyright (c) 2016 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v1.0 which
@@ -7,8 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   Samuel Gagnon - Initial API and implementation
- *   (SAMUEL : Do I put my name here like that?)
+ *   Samuel Gagnon - Initial implementation
  **********************************************************************/
 package org.eclipse.tracecompass.lttng2.kernel.core.analysis.memory;
 
