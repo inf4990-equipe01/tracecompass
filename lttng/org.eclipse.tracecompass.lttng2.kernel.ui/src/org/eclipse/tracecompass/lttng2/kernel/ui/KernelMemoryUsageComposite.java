@@ -4,14 +4,12 @@ import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.tracecompass.analysis.os.linux.core.cpuusage.KernelCpuUsageAnalysis;
-import org.eclipse.tracecompass.analysis.os.linux.ui.views.cpuusage.CpuUsageEntry;
 import org.eclipse.tracecompass.lttng2.kernel.core.analysis.memory.KernelMemoryAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
@@ -19,8 +17,7 @@ import org.eclipse.tracecompass.tmf.ui.viewers.tree.AbstractTmfTreeViewer;
 import org.eclipse.tracecompass.tmf.ui.viewers.tree.ITmfTreeColumnDataProvider;
 import org.eclipse.tracecompass.tmf.ui.viewers.tree.ITmfTreeViewerEntry;
 import org.eclipse.tracecompass.tmf.ui.viewers.tree.TmfTreeColumnData;
-import org.eclipse.tracecompass.tmf.ui.viewers.tree.TmfTreeColumnData.ITmfColumnPercentageProvider;
-
+import org.eclipse.tracecompass.tmf.ui.viewers.tree.TmfTreeViewerEntry;
 /**
  * Tree viewer to display Kernel memory usage information in a specified time range. It
  * shows the process's TID, its name, the time spent on the CPU during that
@@ -32,14 +29,17 @@ import org.eclipse.tracecompass.tmf.ui.viewers.tree.TmfTreeColumnData.ITmfColumn
  */
 public class KernelMemoryUsageComposite extends AbstractTmfTreeViewer{
 
+//    Timeout between to wait for in the updateElements method
+//    private static final long BUILD_UPDATE_TIMEOUT = 500;
     private KernelMemoryAnalysisModule fModule = null;
     private String fSelectedThread = null;
     private static final String[] COLUMN_NAMES = new String[] {
             Messages.KernelMemoryUsageComposite_ColumnTID,
-            Messages.KernelMemoryUsageComposite_ColumnProcess,
-            Messages.KernelMemoryUsageComposite_ColumnPercent,
-            Messages.KernelMemoryUsageComposite_ColumnTime
+           Messages.KernelMemoryUsageComposite_ColumnProcess
     };
+
+    /* A map that saves the mapping of a thread ID to its executable name */
+    private final Map<String, String> fProcessNameMap = new HashMap<>();
 
     /** Provides label for the Kernel memory usage tree viewer cells */
     protected static class KernelMemoryLabelProvider extends TreeLabelProvider {
@@ -51,10 +51,6 @@ public class KernelMemoryUsageComposite extends AbstractTmfTreeViewer{
                 return obj.getTid();
             } else if (columnIndex == 1) {
                 return obj.getProcessName();
-            } else if (columnIndex == 2) {
-                return String.format(Messages.KernelMemoryUsageComposite_TextPercent, obj.getPercent());
-            } else if (columnIndex == 3) {
-                return NLS.bind(Messages.KernelMemoryUsageComposite_TextTime, obj.getTime());
             }
             return element.toString();
         }
@@ -88,7 +84,6 @@ public class KernelMemoryUsageComposite extends AbstractTmfTreeViewer{
                         KernelMemoryUsageEntry n2 = (KernelMemoryUsageEntry) e2;
 
                         return n1.getTid().compareTo(n2.getTid());
-
                     }
                 });
                 columns.add(column);
@@ -100,46 +95,11 @@ public class KernelMemoryUsageComposite extends AbstractTmfTreeViewer{
                         KernelMemoryUsageEntry n2 = (KernelMemoryUsageEntry) e2;
 
                         return n1.getProcessName().compareTo(n2.getProcessName());
-
                     }
                 });
                 columns.add(column);
-                column = new TmfTreeColumnData(COLUMN_NAMES[2]);
-                column.setComparator(new ViewerComparator() {
-                    @Override
-                    public int compare(Viewer viewer, Object e1, Object e2) {
-                        KernelMemoryUsageEntry n1 = (KernelMemoryUsageEntry) e1;
-                        KernelMemoryUsageEntry n2 = (KernelMemoryUsageEntry) e2;
-
-                        return n1.getPercent().compareTo(n2.getPercent());
-
-                    }
-                });
-                column.setPercentageProvider(new ITmfColumnPercentageProvider() {
-
-                    @Override
-                    public double getPercentage(Object data) {
-                        KernelMemoryUsageEntry parent = (KernelMemoryUsageEntry) data;
-                        return parent.getPercent() / 100;
-                    }
-                });
-                columns.add(column);
-                column = new TmfTreeColumnData(COLUMN_NAMES[3]);
-                column.setComparator(new ViewerComparator() {
-                    @Override
-                    public int compare(Viewer viewer, Object e1, Object e2) {
-                        KernelMemoryUsageEntry n1 = (KernelMemoryUsageEntry) e1;
-                        KernelMemoryUsageEntry n2 = (KernelMemoryUsageEntry) e2;
-
-                        return n1.getTime().compareTo(n2.getTime());
-
-                    }
-                });
-                columns.add(column);
-
                 return columns;
             }
-
         };
     }
 
@@ -153,8 +113,8 @@ public class KernelMemoryUsageComposite extends AbstractTmfTreeViewer{
         if (selectedThread != null) {
             /* Find the selected thread among the inputs */
             for (ITmfTreeViewerEntry entry : rootEntry.getChildren()) {
-                if (entry instanceof CpuUsageEntry) {
-                    if (selectedThread.equals(((CpuUsageEntry) entry).getTid())) {
+                if (entry instanceof KernelMemoryUsageEntry) {
+                    if (selectedThread.equals(((KernelMemoryUsageEntry) entry).getTid())) {
                         List<ITmfTreeViewerEntry> list = checkNotNull(Collections.singletonList(entry));
                         super.setSelection(list);
                         return;
@@ -169,7 +129,7 @@ public class KernelMemoryUsageComposite extends AbstractTmfTreeViewer{
         /* Should not be called while trace is still null */
         ITmfTrace trace = checkNotNull(getTrace());
 
-        fModule = TmfTraceUtils.getAnalysisModuleOfClass(trace, KernelCpuUsageAnalysis.class, KernelCpuUsageAnalysis.ID);
+        fModule = TmfTraceUtils.getAnalysisModuleOfClass(trace, KernelMemoryAnalysisModule.class, KernelMemoryAnalysisModule.ID);
         if (fModule == null) {
             return;
         }
@@ -181,7 +141,41 @@ public class KernelMemoryUsageComposite extends AbstractTmfTreeViewer{
     @Override
     protected ITmfTreeViewerEntry updateElements(long start, long end, boolean isSelection) {
         // TODO Auto-generated method stub
-        return null;
+//        if(isSelection || (start == end)) {
+//            return null;
+//        }
+//        if(getTrace() == null || fModule == null) {
+//            return null;
+//        }
+//        fModule.waitForInitialization();
+//        ITmfStateSystem ss = fModule.getStateSystem();
+//        if(ss == null) {
+//            return null;
+//        }
+//        boolean complete = false;
+//        long currentEnd = start;
+//        while(!complete && currentEnd < end){
+//            complete = ss.waitUntilBuilt(BUILD_UPDATE_TIMEOUT);
+//            currentEnd = ss.getCurrentEndTime();
+//        }
+        /* Initialize the data */
+        TmfTreeViewerEntry root = new TmfTreeViewerEntry(""); //$NON-NLS-1$
+//        List<ITmfTreeViewerEntry> entryList = root.getChildren();
+        return root;
+
+    }
+
+
+
+
+    /**
+     * Set the currently selected thread ID
+     *
+     * @param tid
+     *            The selected thread ID
+     */
+    public void setSelectedThread(String tid) {
+        fSelectedThread = tid;
     }
 
 }

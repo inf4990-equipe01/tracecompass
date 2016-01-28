@@ -22,8 +22,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.tracecompass.internal.lttng2.kernel.ui.Activator;
 import org.eclipse.tracecompass.lttng2.kernel.core.analysis.memory.KernelMemoryAnalysisModule;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
-import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundException;
+//import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundException;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
+import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
 import org.eclipse.tracecompass.tmf.core.statesystem.TmfStateSystemAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
@@ -37,6 +38,7 @@ import org.swtchart.Chart;
  *
  */
 public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
+    private long fSelectedThread = -1;
 
     private static final class MemoryFormat extends Format {
         /**
@@ -128,33 +130,52 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
         ss.waitUntilBuilt();
 
         try {
-            List<Integer> tidQuarks = ss.getSubAttributes(-1, false);
-            for (int quark : tidQuarks) {
+            /**
+             * For a given time range, we plot two lines representing the memory allocation.
+             * The first line represent the total memory allocation of every process.
+             * The second line represent the memory allocation of the selected thread.
+             */
+            double [] totalKernelMemoryValues = new double[xvalues.length];
+            double [] selectedThreadValues = new double[xvalues.length];
+            for(int i = 0; i < xvalues.length; i++) {
+                if (monitor.isCanceled()) {
+                    return;
+                }
 
-                double yvalue = 0.0;
-                double[] values = new double[xvalues.length];
-                for (int i = 0; i < xvalues.length; i++) {
-                    if (monitor.isCanceled()) {
-                        return;
-                    }
-                    double x = xvalues[i];
+                double x = xvalues[i];
+                long t = (long)x + this.getTimeOffset();
+                List<ITmfStateInterval> kernelState = ss.queryFullState(t);
+                for (ITmfStateInterval stateInterval : kernelState) {
+                    long value = stateInterval.getStateValue().unboxLong();
+                    totalKernelMemoryValues[i] += value;
 
-                    try {
-                        Integer memQuark = ss.getQuarkRelative(quark, "kmem_allocation"); //$NON-NLS-1$
-                        yvalue = ss.querySingleState((long) x + this.getTimeOffset(), memQuark.intValue()).getStateValue().unboxLong();
-                        values[i] = yvalue;
-                    } catch (AttributeNotFoundException | StateSystemDisposedException e) {
-                        Activator.getDefault().logError(e.getMessage(), e);
+                    int tidQuark = stateInterval.getAttribute();
+                    if (tidQuark == fSelectedThread) {
+                       selectedThreadValues[i] = value;
                     }
                 }
-                setSeries(ss.getAttributeName(quark), values);
-                updateDisplay();
-
             }
-        } catch (AttributeNotFoundException e1) {
-            Activator.getDefault().logError(e1.getMessage(), e1);
+
+            // TODO : Définir ces strings ailleurs
+            setSeries("Total", totalKernelMemoryValues); //$NON-NLS-1$
+            setSeries("SelectedThread", selectedThreadValues); //$NON-NLS-1$
+            updateDisplay();
+        } catch (StateSystemDisposedException e) {
+            Activator.getDefault().logError(e.getMessage(), e);
         }
 
+    }
+    /**
+     * Set the selected thread ID, which will be graphed in this viewer
+     *
+     * @param tid
+     *            The selected thread ID
+     */
+    public void setSelectedThread(long tid) {
+        cancelUpdate();
+        deleteSeries(Long.toString(fSelectedThread));
+        fSelectedThread = tid;
+        updateContent();
     }
 
 }
