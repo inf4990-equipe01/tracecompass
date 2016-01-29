@@ -28,14 +28,13 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Sash;
-
-
-
 import org.eclipse.tracecompass.tmf.core.signal.TmfSignalManager;
 import org.eclipse.tracecompass.tmf.core.signal.TmfTraceSelectedSignal;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
 import org.eclipse.tracecompass.tmf.ui.signal.TmfTimeViewAlignmentSignal;
+import org.eclipse.tracecompass.tmf.ui.viewers.xycharts.TmfXYChartViewer;
+import org.eclipse.tracecompass.tmf.ui.views.TmfChartView;
 
 /**
  * Memory usage view
@@ -43,10 +42,6 @@ import org.eclipse.tracecompass.tmf.ui.signal.TmfTimeViewAlignmentSignal;
  * @author Samuel Gagnon
  * @author Mahdi Zolnouri
  */
-
-import org.eclipse.tracecompass.tmf.ui.viewers.xycharts.TmfXYChartViewer;
-import org.eclipse.tracecompass.tmf.ui.views.TmfChartView;
-
 public class MemoryUsageView extends TmfChartView {
     private static final int[] DEFAULT_WEIGHTS = {1, 3};
 
