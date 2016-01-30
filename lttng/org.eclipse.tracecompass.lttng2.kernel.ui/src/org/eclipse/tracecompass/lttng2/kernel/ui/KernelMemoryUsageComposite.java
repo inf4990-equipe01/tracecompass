@@ -182,7 +182,7 @@ public class KernelMemoryUsageComposite extends AbstractTmfTreeViewer {
 
                 for (int i = 0; i < xvalues.length; i++) {
                     String tid = ss.getAttributeName(quark);
-                    if (!vecTid.contains(tid)) {
+                    if (!vecTid.contains(tid) && !tid.equals("other")) {
                         vecTid.add(tid);
                         String procName = getProcessName(Integer.toString(quark));
  //                       System.out.println(procName);

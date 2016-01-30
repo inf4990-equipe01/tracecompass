@@ -16,11 +16,13 @@ import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
 import java.util.List;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.tracecompass.internal.lttng2.kernel.ui.Activator;
 import org.eclipse.tracecompass.lttng2.kernel.core.analysis.memory.KernelMemoryAnalysisModule;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
+//import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundException;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
 import org.eclipse.tracecompass.tmf.core.statesystem.TmfStateSystemAnalysisModule;
@@ -36,7 +38,6 @@ import org.swtchart.Chart;
  *
  */
 public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
-    private long fSelectedThread = -1;
 
     private static final class MemoryFormat extends Format {
         /**
@@ -80,6 +81,8 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
 
     private TmfStateSystemAnalysisModule fModule = null;
 
+    private long fSelectedThread = -1;
+
     /**
      * Constructor
      *
@@ -115,6 +118,7 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
         if (getTrace() == null || fModule == null) {
             return;
         }
+
         fModule.waitForInitialization();
         ITmfStateSystem ss = fModule.getStateSystem();
         /* Don't wait for the module completion, when it's ready, we'll know */
@@ -123,6 +127,9 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
         }
 
         double[] xvalues = getXAxis(start, end, nb);
+        if (xvalues.length == 0) {
+            return;
+        }
         setXAxis(xvalues);
 
         ss.waitUntilBuilt();
@@ -163,6 +170,7 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
         }
 
     }
+
     /**
      * Set the selected thread ID, which will be graphed in this viewer
      *
