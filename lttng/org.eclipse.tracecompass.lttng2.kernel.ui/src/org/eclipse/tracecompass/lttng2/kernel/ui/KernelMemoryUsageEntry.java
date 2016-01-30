@@ -1,0 +1,51 @@
+package org.eclipse.tracecompass.lttng2.kernel.ui;
+
+import org.eclipse.tracecompass.tmf.ui.viewers.tree.TmfTreeViewerEntry;
+
+/*******************************************************************************
+ * Copyright (c) 2014, 2015 École Polytechnique de Montréal
+ *
+ * All rights reserved. This program and the accompanying materials are
+ * made available under the terms of the Eclipse Public License v1.0 which
+ * accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Geneviève Bastien - Initial API and implementation
+ *   Mahdi Zolnouri - Modify for Kernel Memory Usage
+ *******************************************************************************/
+public class KernelMemoryUsageEntry extends TmfTreeViewerEntry{
+
+    private final String fTid;
+    private final String fProcessName;
+
+    /**
+     * @param tid
+     *              The TID of the process
+     * @param name
+     *              The thread's name
+     */
+    public KernelMemoryUsageEntry(String tid, String name) {
+        super(tid);
+        fTid = tid;
+        fProcessName = name;
+    }
+
+    /**
+     * Get the TID of the thread represented by this entry
+     *
+     * @return The thread's TID
+     */
+    public String getTid() {
+        return fTid;
+    }
+
+    /**
+     * Get the process name
+     *
+     * @return The process name
+     */
+    public String getProcessName() {
+        return fProcessName;
+    }
+}
