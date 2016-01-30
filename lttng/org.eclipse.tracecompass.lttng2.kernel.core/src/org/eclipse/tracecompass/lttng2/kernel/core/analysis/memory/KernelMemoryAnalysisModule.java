@@ -12,6 +12,7 @@
 package org.eclipse.tracecompass.lttng2.kernel.core.analysis.memory;
 
 import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.internal.lttng2.kernel.core.analysis.memory.KernelMemoryStateProvider;
 import org.eclipse.tracecompass.lttng2.kernel.core.trace.LttngKernelTrace;

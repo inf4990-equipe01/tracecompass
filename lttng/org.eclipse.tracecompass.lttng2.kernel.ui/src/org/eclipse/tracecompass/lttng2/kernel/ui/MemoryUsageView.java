@@ -94,7 +94,7 @@ public class MemoryUsageView extends TmfChartView {
                     if (structSelection instanceof KernelMemoryUsageEntry) {
                         KernelMemoryUsageEntry entry = (KernelMemoryUsageEntry) structSelection;
                         fTreeViewer.setSelectedThread(entry.getTid());
-                        fXYViewer.setSelectedThread(Long.valueOf(entry.getTid()));
+                        fXYViewer.setSelectedThread(entry.getTid());
                     }
                 }
             }

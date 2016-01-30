@@ -1,9 +1,5 @@
-package org.eclipse.tracecompass.lttng2.kernel.ui;
-
-import org.eclipse.tracecompass.tmf.ui.viewers.tree.TmfTreeViewerEntry;
-
 /*******************************************************************************
- * Copyright (c) 2014, 2015 École Polytechnique de Montréal
+ * Copyright (c) 2016 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v1.0 which
@@ -11,9 +7,12 @@ import org.eclipse.tracecompass.tmf.ui.viewers.tree.TmfTreeViewerEntry;
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   Geneviève Bastien - Initial API and implementation
- *   Mahdi Zolnouri - Modify for Kernel Memory Usage
+ *   Mahdi Zolnouri - Initial implementation
  *******************************************************************************/
+package org.eclipse.tracecompass.lttng2.kernel.ui;
+
+import org.eclipse.tracecompass.tmf.ui.viewers.tree.TmfTreeViewerEntry;
+
 public class KernelMemoryUsageEntry extends TmfTreeViewerEntry{
 
     private final String fTid;

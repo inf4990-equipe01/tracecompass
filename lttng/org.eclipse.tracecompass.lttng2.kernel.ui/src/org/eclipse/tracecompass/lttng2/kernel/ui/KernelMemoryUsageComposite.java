@@ -17,17 +17,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-//import java.util.Vector;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.widgets.Composite;
-//import org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis.Attributes;
-//import org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis.KernelAnalysisModule;
-//import org.eclipse.tracecompass.internal.lttng2.kernel.ui.Activator;
+import org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis.Attributes;
+import org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis.KernelAnalysisModule;
+import org.eclipse.tracecompass.internal.lttng2.kernel.ui.Activator;
 import org.eclipse.tracecompass.lttng2.kernel.core.analysis.memory.KernelMemoryAnalysisModule;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
-//import org.eclipse.tracecompass.statesystem.core.StateSystemUtils;
-//import org.eclipse.tracecompass.tmf.core.statesystem.TmfStateSystemAnalysisModule;
+import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
+import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
+import org.eclipse.tracecompass.statesystem.core.StateSystemUtils;
+import org.eclipse.tracecompass.tmf.core.statesystem.TmfStateSystemAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 import org.eclipse.tracecompass.tmf.ui.viewers.tree.AbstractTmfTreeViewer;
@@ -35,10 +36,8 @@ import org.eclipse.tracecompass.tmf.ui.viewers.tree.ITmfTreeColumnDataProvider;
 import org.eclipse.tracecompass.tmf.ui.viewers.tree.ITmfTreeViewerEntry;
 import org.eclipse.tracecompass.tmf.ui.viewers.tree.TmfTreeColumnData;
 import org.eclipse.tracecompass.tmf.ui.viewers.tree.TmfTreeViewerEntry;
-//import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundException;
-//import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
-//import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
-//import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue;
+import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundException;
+import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue;
 
 /**
  * Tree viewer to select which process to display in the kernel memory usage chart.
@@ -156,6 +155,27 @@ public class KernelMemoryUsageComposite extends AbstractTmfTreeViewer {
         fProcessNameMap.clear();
     }
 
+    /**
+     * TODO : Faire quelque chose de sensé ici...
+     * Cette méthode est complètement bidon! Je veux simplement afficher quelque chose
+     * dans les colonnes.
+     *
+     * De la façon que je comprend les choses en ce moment, une fois que je crée mes attributs dans
+     * mon stateprovider, ils restent là pour toute la durée de la trace. De ce fait, je
+     * ne vais pas avoir une sélection différente si je change mon interval.
+     *
+     * (Autrement dit, lorsque que je fais ss.queryFullState(time), je pense que je retrouve tout le temps
+     * tout les TID qui ont existé durant la trace.)
+     *
+     * Il faudrait peut-être prendre en compte la date de création/destruction des threads
+     * afin de pouvoir afficher seulement les threads actifs durant un certain interval.
+     *
+     * Mon raisonnement s'applique aussi au graphique Kernel Memory Usage. Si on thread est détruit,
+     * on continu d'afficher sa "consommation de mémoire" dans le graphique, ce qui se
+     * traduit par une ligne droite...
+     *
+     * @Matthew : J'aimerais que tu m'éclaires un peu la dessus! (Samuel)
+     */
     @Override
     protected ITmfTreeViewerEntry updateElements(long start, long end, boolean isSelection) {
         if (isSelection || (start == end)) {
@@ -175,80 +195,80 @@ public class KernelMemoryUsageComposite extends AbstractTmfTreeViewer {
 
         ss.waitUntilBuilt();
 
-        TmfTreeViewerEntry root = new TmfTreeViewerEntry(""); //$NON-NLS-1$
 
-//        List<ITmfTreeViewerEntry> entryList = root.getChildren();
+        TmfTreeViewerEntry root = new TmfTreeViewerEntry(""); //$NON-NLS-1$
+        List<ITmfTreeViewerEntry> entryList = root.getChildren();
+
+        try {
+            List<ITmfStateInterval> kernelState = ss.queryFullState(start);
+            for (ITmfStateInterval stateInterval : kernelState) {
+                int quark = stateInterval.getAttribute();
+                String tid = ss.getAttributeName(quark);
+                String procname = getProcessName(tid);
+                KernelMemoryUsageEntry obj = new KernelMemoryUsageEntry(tid, procname);
+                entryList.add(obj);
+            }
+        } catch (StateSystemDisposedException e) {
+            Activator.getDefault().logError(e.getMessage(), e);
+        }
 
         return root;
     }
+
     /*
      * Get the process name from its TID by using the LTTng kernel analysis
      * module
      */
-//    private String getProcessName(String tid) {
-//        String execName = fProcessNameMap.get(tid);
-//        if (execName != null) {
-//            return execName;
-//        }
-//        ITmfTrace trace = getTrace();
-//        if (trace == null) {
-//            return tid;
-//        }
-//        ITmfStateSystem kernelSs = TmfStateSystemAnalysisModule.getStateSystem(trace, KernelAnalysisModule.ID);
-//        if (kernelSs == null) {
-//            return tid;
-//        }
-//
-//        try {
-//            int cpusNode = kernelSs.getQuarkAbsolute(Attributes.THREADS);
-//
-//            /* Get the quarks for each cpu */
-//            List<Integer> cpuNodes = kernelSs.getSubAttributes(cpusNode, false);
-//
-//            for (Integer tidQuark : cpuNodes) {
-//                if (kernelSs.getAttributeName(tidQuark).equals(tid)) {
-//                    int execNameQuark;
-//                    List<ITmfStateInterval> execNameIntervals;
-//                    try {
-//                        execNameQuark = kernelSs.getQuarkRelative(tidQuark, Attributes.EXEC_NAME);
-//                        execNameIntervals = StateSystemUtils.queryHistoryRange(kernelSs, execNameQuark, getStartTime(), getEndTime());
-//                    } catch (AttributeNotFoundException e) {
-//                        /* No information on this thread (yet?), skip it for now */
-//                        continue;
-//                    } catch (StateSystemDisposedException e) {
-//                        /* State system is closing down, no point continuing */
-//                        break;
-//                    }
-//
-//                    for (ITmfStateInterval execNameInterval : execNameIntervals) {
-//                        if (!execNameInterval.getStateValue().isNull() &&
-//                                execNameInterval.getStateValue().getType() == ITmfStateValue.Type.STRING) {
-//                            execName = execNameInterval.getStateValue().unboxStr();
-//                            fProcessNameMap.put(tid, execName);
-//                            return execName;
-//                        }
-//                    }
-//                }
-//            }
-//
-//        } catch (AttributeNotFoundException e) {
-//            /* can't find the process name, just return the tid instead */
-//        }
-//        return tid;
-//    }
-
-    protected static final double[] getXAxis(long start, long end, int nb) {
-
-        double timestamps[] = new double[nb];
-        long steps = (end - start);
-        double step = steps / (double) nb;
-
-        double curTime = 1;
-        for (int i = 0; i < nb; i++) {
-            timestamps[i] = curTime;
-            curTime += step;
+    private String getProcessName(String tid) {
+        String execName = fProcessNameMap.get(tid);
+        if (execName != null) {
+            return execName;
         }
-        return timestamps;
+        ITmfTrace trace = getTrace();
+        if (trace == null) {
+            return tid;
+        }
+        ITmfStateSystem kernelSs = TmfStateSystemAnalysisModule.getStateSystem(trace, KernelAnalysisModule.ID);
+        if (kernelSs == null) {
+            return tid;
+        }
+
+        try {
+            int cpusNode = kernelSs.getQuarkAbsolute(Attributes.THREADS);
+
+            /* Get the quarks for each cpu */
+            List<Integer> cpuNodes = kernelSs.getSubAttributes(cpusNode, false);
+
+            for (Integer tidQuark : cpuNodes) {
+                if (kernelSs.getAttributeName(tidQuark).equals(tid)) {
+                    int execNameQuark;
+                    List<ITmfStateInterval> execNameIntervals;
+                    try {
+                        execNameQuark = kernelSs.getQuarkRelative(tidQuark, Attributes.EXEC_NAME);
+                        execNameIntervals = StateSystemUtils.queryHistoryRange(kernelSs, execNameQuark, getStartTime(), getEndTime());
+                    } catch (AttributeNotFoundException e) {
+                        /* No information on this thread (yet?), skip it for now */
+                        continue;
+                    } catch (StateSystemDisposedException e) {
+                        /* State system is closing down, no point continuing */
+                        break;
+                    }
+
+                    for (ITmfStateInterval execNameInterval : execNameIntervals) {
+                        if (!execNameInterval.getStateValue().isNull() &&
+                                execNameInterval.getStateValue().getType() == ITmfStateValue.Type.STRING) {
+                            execName = execNameInterval.getStateValue().unboxStr();
+                            fProcessNameMap.put(tid, execName);
+                            return execName;
+                        }
+                    }
+                }
+            }
+
+        } catch (AttributeNotFoundException e) {
+            /* can't find the process name, just return the tid instead */
+        }
+        return tid;
     }
 
     /**

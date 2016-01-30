@@ -80,7 +80,7 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
 
     private TmfStateSystemAnalysisModule fModule = null;
 
-    private long fSelectedThread = -1;
+    private String fSelectedThread = "-1";  //$NON-NLS-1$
 
     /**
      * Constructor
@@ -153,9 +153,10 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
                     long value = stateInterval.getStateValue().unboxLong();
                     totalKernelMemoryValues[i] += value;
 
-                    int tidQuark = stateInterval.getAttribute();
-                    if (tidQuark == fSelectedThread) {
-                       selectedThreadValues[i] = value;
+                    int quark = stateInterval.getAttribute();
+                    String tid = ss.getAttributeName(quark);
+                    if (tid.equals(fSelectedThread)) {
+                        selectedThreadValues[i] = value;
                     }
                 }
             }
@@ -176,9 +177,9 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
      * @param tid
      *            The selected thread ID
      */
-    public void setSelectedThread(long tid) {
+    public void setSelectedThread(String tid) {
         cancelUpdate();
-        deleteSeries(Long.toString(fSelectedThread));
+        deleteSeries(tid);
         fSelectedThread = tid;
         updateContent();
     }
