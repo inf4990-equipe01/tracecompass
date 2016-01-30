@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   Samuel Gagnon - Initial implementation
+ *   Samuel Gagnon & Mahdi Zolnouri- Initial implementation
  **********************************************************************/
 package org.eclipse.tracecompass.lttng2.kernel.ui;
 
@@ -69,8 +69,6 @@ public class MemoryUsageView extends TmfChartView {
     }
     @Override
     public void createPartControl(Composite parent) {
-//        super.createPartControl(parent);
-
         fSashForm = new SashForm(parent, SWT.NONE);
 
         fTreeViewer = new KernelMemoryUsageComposite(fSashForm);

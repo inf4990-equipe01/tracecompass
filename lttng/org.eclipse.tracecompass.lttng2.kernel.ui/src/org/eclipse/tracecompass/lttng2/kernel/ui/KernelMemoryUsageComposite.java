@@ -1,3 +1,14 @@
+/**********************************************************************
+ * Copyright (c) 2016 Polytechnique de Montréal
+ *
+ * All rights reserved. This program and the accompanying materials are
+ * made available under the terms of the Eclipse Public License v1.0 which
+ * accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Mahdi Zolnouri - Initial implementation
+ **********************************************************************/
 package org.eclipse.tracecompass.lttng2.kernel.ui;
 
 import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
@@ -29,15 +40,10 @@ import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedE
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
 import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue;
 
-//import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
 /**
- * Tree viewer to display Kernel memory usage information in a specified time
- * range. It shows the process's TID, its name, the time spent on the CPU during
- * that range, in % and absolute value.
+ * Tree viewer to select which process to display in the kernel memory usage chart.
  *
- * @author Geneviève Bastien
  * @author Mahdi Zolnouri
- *
  */
 public class KernelMemoryUsageComposite extends AbstractTmfTreeViewer {
 
@@ -185,7 +191,6 @@ public class KernelMemoryUsageComposite extends AbstractTmfTreeViewer {
                     if (!vecTid.contains(tid) && !tid.equals("other")) {
                         vecTid.add(tid);
                         String procName = getProcessName(Integer.toString(quark));
- //                       System.out.println(procName);
                         KernelMemoryUsageEntry obj = new KernelMemoryUsageEntry(tid, procName);
                         entryList.add(obj);
                     }
