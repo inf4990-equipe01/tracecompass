@@ -155,27 +155,6 @@ public class KernelMemoryUsageComposite extends AbstractTmfTreeViewer {
         fProcessNameMap.clear();
     }
 
-    /**
-     * TODO : Faire quelque chose de sensé ici...
-     * Cette méthode est complètement bidon! Je veux simplement afficher quelque chose
-     * dans les colonnes.
-     *
-     * De la façon que je comprend les choses en ce moment, une fois que je crée mes attributs dans
-     * mon stateprovider, ils restent là pour toute la durée de la trace. De ce fait, je
-     * ne vais pas avoir une sélection différente si je change mon interval.
-     *
-     * (Autrement dit, lorsque que je fais ss.queryFullState(time), je pense que je retrouve tout le temps
-     * tout les TID qui ont existé durant la trace.)
-     *
-     * Il faudrait peut-être prendre en compte la date de création/destruction des threads
-     * afin de pouvoir afficher seulement les threads actifs durant un certain interval.
-     *
-     * Mon raisonnement s'applique aussi au graphique Kernel Memory Usage. Si on thread est détruit,
-     * on continu d'afficher sa "consommation de mémoire" dans le graphique, ce qui se
-     * traduit par une ligne droite...
-     *
-     * @Matthew : J'aimerais que tu m'éclaires un peu la dessus! (Samuel)
-     */
     @Override
     protected ITmfTreeViewerEntry updateElements(long start, long end, boolean isSelection) {
         if (isSelection || (start == end)) {
