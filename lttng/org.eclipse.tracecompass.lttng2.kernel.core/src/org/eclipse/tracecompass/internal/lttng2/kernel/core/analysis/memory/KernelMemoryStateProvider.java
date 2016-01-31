@@ -94,16 +94,15 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
             }
 
             int tidQuark = ss.getQuarkAbsoluteAndAdd(tid);
-            int tidMemQuark = ss.getQuarkRelativeAndAdd(tidQuark, "kmem_allocation"); //$NON-NLS-1$
 
-            ITmfStateValue prevMem = ss.queryOngoingState(tidMemQuark);
+            ITmfStateValue prevMem = ss.queryOngoingState(tidQuark);
             if (prevMem.isNull()) {
                 prevMem = TmfStateValue.newValueLong(0);
             }
 
             long prevMemValue = prevMem.unboxLong();
             prevMemValue += inc;
-            ss.modifyAttribute(ts, TmfStateValue.newValueLong(prevMemValue), tidMemQuark);
+            ss.modifyAttribute(ts, TmfStateValue.newValueLong(prevMemValue), tidQuark);
 
         } catch (AttributeNotFoundException e) {
             Activator.getDefault().logError(e.getMessage(), e);

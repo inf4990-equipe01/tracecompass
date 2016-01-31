@@ -20,6 +20,14 @@
             name="%vcpuview.name"
             restorable="true">
       </view>
+      <view
+      		category="org.eclipse.linuxtools.lttng2.ui.views.category"
+            class="org.eclipse.tracecompass.lttng2.kernel.ui.MemoryUsageView"
+            id="org.eclipse.tracecompass.lttng2.kernel.memoryusage"
+            name="%KernelMemoryUsage.name "
+            restorable="true">
+      </view>
+      
    </extension>
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">
@@ -46,6 +54,13 @@
                id="org.eclipse.tracecompass.lttng2.analysis.vm.core.VirtualMachineAnalysisModule">
          </analysisId>
       </output>
+      <output
+      		class="org.eclipse.tracecompass.tmf.ui.analysis.TmfAnalysisViewOutput"
+            id="org.eclipse.linuxtools.lttng2.kernel.memoryusage">
+         <analysisId
+               id="org.eclipse.linuxtools.lttng2.kernel.analysis.memory">
+         </analysisId>
+      </output>
    </extension>
    <extension
          point="org.eclipse.linuxtools.tmf.ui.tracetypeui">
@@ -62,15 +77,5 @@
                id="org.eclipse.tracecompass.analysis.graph.core.criticalpath">
          </analysisId>
       </parameterProvider>
-   </extension>
-   <extension
-         point="org.eclipse.ui.views">
-      <view
-            category="org.eclipse.linuxtools.lttng2.ui.views.category"
-            class="org.eclipse.tracecompass.lttng2.kernel.ui.MemoryUsageView"
-            id="org.eclipse.tracecompass.lttng2.kernel.ui.memoryusage"
-            name="Kernel Memory Usage "
-            restorable="true">
-      </view>
    </extension>
 </plugin>

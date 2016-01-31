@@ -11,9 +11,16 @@ import java.util.Map;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.tracecompass.analysis.os.linux.ui.views.cpuusage.CpuUsageEntry;
+import org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis.Attributes;
+import org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis.KernelAnalysisModule;
+import org.eclipse.tracecompass.internal.lttng2.kernel.ui.Activator;
 import org.eclipse.tracecompass.lttng2.kernel.core.analysis.memory.KernelMemoryAnalysisModule;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
+import org.eclipse.tracecompass.statesystem.core.StateSystemUtils;
+import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundException;
+import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
+import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
+import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue;
 import org.eclipse.tracecompass.tmf.core.statesystem.TmfStateSystemAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
@@ -24,7 +31,7 @@ import org.eclipse.tracecompass.tmf.ui.viewers.tree.TmfTreeColumnData;
 import org.eclipse.tracecompass.tmf.ui.viewers.tree.TmfTreeViewerEntry;
 
 /**
- * @author Wassim
+ * @author Wassim Nasrallah
  *
  */
 public class MemoryUsageComposite extends AbstractTmfTreeViewer{
@@ -48,10 +55,8 @@ public class MemoryUsageComposite extends AbstractTmfTreeViewer{
     private final Map<String, String> fProcessNameMap = new HashMap<>();
 
 
-    /**
-     * @author Wassim
-     *
-     */
+
+    @SuppressWarnings("javadoc")
     protected static class MemoryLabelProvider extends TreeLabelProvider {
 
         @Override
@@ -111,8 +116,8 @@ public class MemoryUsageComposite extends AbstractTmfTreeViewer{
         if (selectedThread != null) {
             /* Find the selected thread among the inputs */
             for (ITmfTreeViewerEntry entry : rootEntry.getChildren()) {
-                if (entry instanceof CpuUsageEntry) {
-                    if (selectedThread.equals(((CpuUsageEntry) entry).getTid())) {
+                if (entry instanceof MemoryUsageEntry) {
+                    if (selectedThread.equals(((MemoryUsageEntry) entry).getTid())) {
                         List<ITmfTreeViewerEntry> list = checkNotNull(Collections.singletonList(entry));
                         super.setSelection(list);
                         return;
@@ -122,6 +127,7 @@ public class MemoryUsageComposite extends AbstractTmfTreeViewer{
         }
     }
 
+    @SuppressWarnings("null")
     @Override
     public void initializeDataSource() {
         /* Should not be called while trace is still null */
@@ -151,27 +157,24 @@ public class MemoryUsageComposite extends AbstractTmfTreeViewer{
             return null;
         }
 
-        /*boolean complete = false;
-        long currentEnd = start;*/
-
-        ss.waitUntilBuilt();
-
         TmfTreeViewerEntry root = new TmfTreeViewerEntry(""); //$NON-NLS-1$
-        //List<ITmfTreeViewerEntry> entryList = root.getChildren();
+        List<ITmfTreeViewerEntry> entryList = root.getChildren();
 
-        /*public String getColumnText(Object element, int columnIndex) {
-            MemoryUsageEntry obj = (MemoryUsageEntry) element;
-            if (columnIndex == 0) {
-                return obj.getTid();
-            } else if (columnIndex == 1) {
-                return obj.getProcessName();
+        try{
+            List<ITmfStateInterval> kernelState = ss.queryFullState(start);
+            for (ITmfStateInterval stateInterval : kernelState) {
+                int quark = stateInterval.getAttribute();
+                if(stateInterval.getEndTime() < end) {
+                    String tid = ss.getAttributeName(quark);
+                    String procName = getProcessName(tid);
+                    MemoryUsageEntry obj = new MemoryUsageEntry(tid, procName);
+                    entryList.add(obj);
+                }
             }
 
-            return element.toString();*/
-
-        //MemoryUsageEntry obj = (MemoryUsageEntry) element;
-
-       // MemoryUsageEntry obj = new MemoryUsageEntry(getTid(), getProcessName() );
+        } catch (StateSystemDisposedException e) {
+            Activator.getDefault().logError(e.getMessage(), e);
+        }
 
         return root;
     }
@@ -181,17 +184,50 @@ public class MemoryUsageComposite extends AbstractTmfTreeViewer{
         if (execName != null) {
             return execName;
         }
-
         ITmfTrace trace = getTrace();
         if (trace == null) {
             return tid;
         }
-
-        ITmfStateSystem kernelSs = TmfStateSystemAnalysisModule.getStateSystem(trace, KernelMemoryAnalysisModule.ID);
+        ITmfStateSystem kernelSs = TmfStateSystemAnalysisModule.getStateSystem(trace, KernelAnalysisModule.ID);
         if (kernelSs == null) {
             return tid;
         }
 
+        try {
+            int cpusNode = kernelSs.getQuarkAbsolute(Attributes.THREADS);
+
+            /* Get the quarks for each cpu */
+            List<Integer> cpuNodes = kernelSs.getSubAttributes(cpusNode, false);
+
+            for (Integer tidQuark : cpuNodes) {
+                if (kernelSs.getAttributeName(tidQuark).equals(tid)) {
+                    int execNameQuark;
+                    List<ITmfStateInterval> execNameIntervals;
+                    try {
+                        execNameQuark = kernelSs.getQuarkRelative(tidQuark, Attributes.EXEC_NAME);
+                        execNameIntervals = StateSystemUtils.queryHistoryRange(kernelSs, execNameQuark, getStartTime(), getEndTime());
+                    } catch (AttributeNotFoundException e) {
+                        /* No information on this thread (yet?), skip it for now */
+                        continue;
+                    } catch (StateSystemDisposedException e) {
+                        /* State system is closing down, no point continuing */
+                        break;
+                    }
+
+                    for (ITmfStateInterval execNameInterval : execNameIntervals) {
+                        if (!execNameInterval.getStateValue().isNull() &&
+                                execNameInterval.getStateValue().getType() == ITmfStateValue.Type.STRING) {
+                            execName = execNameInterval.getStateValue().unboxStr();
+                            fProcessNameMap.put(tid, execName);
+                            return execName;
+                        }
+                    }
+                }
+            }
+
+        } catch (AttributeNotFoundException e) {
+            /* can't find the process name, just return the tid instead */
+        }
         return tid;
     }
 

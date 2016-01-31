@@ -15,7 +15,9 @@ import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Composite;
@@ -81,7 +83,7 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
 
     private TmfStateSystemAnalysisModule fModule = null;
 
-    private long fSelectedThread = -1;
+    private String fSelectedThread = "-1"; //$NON-NLS-1$
 
     /**
      * Constructor
@@ -142,6 +144,9 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
              */
             double [] totalKernelMemoryValues = new double[xvalues.length];
             double [] selectedThreadValues = new double[xvalues.length];
+
+            Map<String,Double> lowestValues = new HashMap<>();
+
             for(int i = 0; i < xvalues.length; i++) {
                 if (monitor.isCanceled()) {
                     return;
@@ -154,11 +159,25 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
                     long value = stateInterval.getStateValue().unboxLong();
                     totalKernelMemoryValues[i] += value;
 
-                    int tidQuark = stateInterval.getAttribute();
-                    if (tidQuark == fSelectedThread) {
+                    int quark = stateInterval.getAttribute();
+                    String tid = ss.getAttributeName(quark);
+
+                    if (lowestValues.getOrDefault(tid, (double) 0) > value) {
+                        lowestValues.put(tid, (double) value);
+                    }
+
+                    if (tid.equals(fSelectedThread)) {
                        selectedThreadValues[i] = value;
                     }
                 }
+            }
+
+            double inc = -lowestValues.values().stream().mapToDouble(Double::doubleValue).sum();
+            for(int i = 0; i < xvalues.length; i++){
+
+                totalKernelMemoryValues[i] += inc;
+                double incSelected = -lowestValues.getOrDefault(fSelectedThread, (double) 0);
+                selectedThreadValues[i] += incSelected;
             }
 
             // TODO : Définir ces strings ailleurs
@@ -177,9 +196,9 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
      * @param tid
      *            The selected thread ID
      */
-    public void setSelectedThread(long tid) {
+    public void setSelectedThread(String tid) {
         cancelUpdate();
-        deleteSeries(Long.toString(fSelectedThread));
+        deleteSeries(tid);
         fSelectedThread = tid;
         updateContent();
     }

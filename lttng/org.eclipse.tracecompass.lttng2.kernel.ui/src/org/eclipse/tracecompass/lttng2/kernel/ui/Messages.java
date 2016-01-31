@@ -3,7 +3,7 @@ package org.eclipse.tracecompass.lttng2.kernel.ui;
 import org.eclipse.osgi.util.NLS;
 
 /**
- * @author Wassim
+ * @author Wassim Nasrallah
  *
  */
 public class Messages extends NLS {
@@ -16,6 +16,8 @@ public class Messages extends NLS {
     public static String MemoryUsageViewer_yAxis;
     public static String MemoryUsageComposite_ColumnProcess;
     public static String MemoryUsageComposite_ColumnTID;
+    public static String MemoryUsageViewer_Total;
+
 
     static {
         // initialize resource bundle

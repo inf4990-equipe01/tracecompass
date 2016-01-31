@@ -3,7 +3,7 @@ package org.eclipse.tracecompass.lttng2.kernel.ui;
 import org.eclipse.tracecompass.tmf.ui.viewers.tree.TmfTreeViewerEntry;
 
 /**
- * @author Wassim
+ * @author Wassim Nasrallah
  *
  */
 public class MemoryUsageEntry extends TmfTreeViewerEntry  {

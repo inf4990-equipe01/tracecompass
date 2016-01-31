@@ -11,8 +11,14 @@
  **********************************************************************/
 package org.eclipse.tracecompass.lttng2.kernel.ui;
 
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.layout.GridData;
@@ -23,6 +29,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Sash;
 import org.eclipse.tracecompass.tmf.core.signal.TmfSignalManager;
+import org.eclipse.tracecompass.tmf.core.signal.TmfTraceSelectedSignal;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
 import org.eclipse.tracecompass.tmf.ui.signal.TmfTimeViewAlignmentSignal;
@@ -33,15 +40,20 @@ import org.eclipse.tracecompass.tmf.ui.views.TmfChartView;
  * Memory usage view
  *
  * @author Samuel Gagnon
+ * @author Wassim Nasrallah
  */
 public class MemoryUsageView extends TmfChartView {
 
+    public static final String ID = "org.eclipse.linuxtools.lttng2.kernel.memomyusage"; //$NON-NLS-1$
+
     private SashForm fSashForm;
     private Composite fXYViewerContainer;
-    private TmfXYChartViewer fChartViewer;
+    //private TmfXYChartViewer fChartViewer;
     private Listener fSashDragListener;
     private static final int[] DEFAULT_WEIGHTS = {1, 3};
 
+    private MemoryUsageComposite fTreeViewer = null;
+    private MemoryUsageViewer fXYViewer = null;
 
     /**
      * Constructor used by plugin.xml
@@ -60,18 +72,50 @@ public class MemoryUsageView extends TmfChartView {
         super.createPartControl(parent);
 
         fSashForm = new SashForm(parent, SWT.NONE);
-        new Composite(fSashForm, SWT.NONE);
         fXYViewerContainer = new Composite(fSashForm, SWT.NONE);
         GridLayout layout = new GridLayout();
         layout.marginHeight = 0;
         layout.marginWidth = 0;
         fXYViewerContainer.setLayout(layout);
 
-        fChartViewer = createChartViewer(fXYViewerContainer);
-        fChartViewer.setSendTimeAlignSignals(true);
-        fChartViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        /* Build the XY chart part of the view */
+        fXYViewer = new MemoryUsageViewer(fXYViewerContainer);
+        fXYViewer.setSendTimeAlignSignals(true);
+        fXYViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        fChartViewer.getControl().addPaintListener(new PaintListener() {
+
+        /* Add selection listener to tree viewer */
+        fTreeViewer.addSelectionChangeListener(new ISelectionChangedListener() {
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                ISelection selection = event.getSelection();
+                if (selection instanceof IStructuredSelection) {
+                    Object structSelection = ((IStructuredSelection) selection).getFirstElement();
+                    if (structSelection instanceof MemoryUsageEntry) {
+                        MemoryUsageEntry entry = (MemoryUsageEntry) structSelection;
+                        fTreeViewer.setSelectedThread(entry.getTid());
+                        fXYViewer.setSelectedThread(entry.getTid());
+                    }
+                }
+            }
+        });
+
+        /* Initialize the viewers with the currently selected trace */
+        ITmfTrace trace = TmfTraceManager.getInstance().getActiveTrace();
+        if (trace != null) {
+            TmfTraceSelectedSignal signal = new TmfTraceSelectedSignal(this, trace);
+            fTreeViewer.traceSelected(signal);
+            fXYViewer.traceSelected(signal);
+        }
+        fTreeViewer.getControl().addControlListener(new ControlAdapter() {
+            @Override
+            public void controlResized(ControlEvent e) {
+                super.controlResized(e);
+            }
+        });
+
+
+        fXYViewer.getControl().addPaintListener(new PaintListener() {
             @Override
             public void paintControl(PaintEvent e) {
                 // Sashes in a SashForm are being created on layout so add the
@@ -96,10 +140,21 @@ public class MemoryUsageView extends TmfChartView {
             }
         });
         fSashForm.setWeights(DEFAULT_WEIGHTS);
-        ITmfTrace trace = TmfTraceManager.getInstance().getActiveTrace();
-        if (trace != null) {
-            setTrace(trace);
-            loadTrace();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (fTreeViewer != null) {
+            fTreeViewer.dispose();
         }
+        if (fXYViewer != null) {
+            fXYViewer.dispose();
+        }
+    }
+
+    @Override
+    public void setFocus() {
+        fXYViewer.getControl().setFocus();
     }
 }
