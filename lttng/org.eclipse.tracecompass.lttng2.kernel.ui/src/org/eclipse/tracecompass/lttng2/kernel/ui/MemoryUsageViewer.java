@@ -15,7 +15,9 @@ import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Composite;
@@ -141,6 +143,10 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
              */
             double [] totalKernelMemoryValues = new double[xvalues.length];
             double [] selectedThreadValues = new double[xvalues.length];
+            // For a thread that was created before the trace began, it is possible
+            // to have negative values. We keep the lowest values for each thread
+            // so we can shift the graphic up.
+            Map<String, Double> lowestValues = new HashMap<>();
             for(int i = 0; i < xvalues.length; i++) {
                 if (monitor.isCanceled()) {
                     return;
@@ -155,10 +161,24 @@ public class MemoryUsageViewer extends TmfCommonXLineChartViewer {
 
                     int quark = stateInterval.getAttribute();
                     String tid = ss.getAttributeName(quark);
+
+                    if (lowestValues.getOrDefault(tid, (double) 0) > value) {
+                        lowestValues.put(tid, (double) value);
+                    }
+
                     if (tid.equals(fSelectedThread)) {
                         selectedThreadValues[i] = value;
                     }
                 }
+            }
+
+            // We get a positive quantity that we will use to shift the total consumption up.
+            double inc = -lowestValues.values().stream().mapToDouble(Double::doubleValue).sum();
+            for (int i = 0; i < xvalues.length; i++) {
+                totalKernelMemoryValues[i] += inc;
+                // We also want to shift the values of the selected thread
+                double incSelected = -lowestValues.getOrDefault(fSelectedThread, (double) 0);
+                selectedThreadValues[i] += incSelected;
             }
 
             // TODO : Définir ces strings ailleurs
