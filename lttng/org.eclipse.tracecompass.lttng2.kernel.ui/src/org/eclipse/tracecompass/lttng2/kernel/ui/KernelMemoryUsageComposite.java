@@ -203,10 +203,13 @@ public class KernelMemoryUsageComposite extends AbstractTmfTreeViewer {
             List<ITmfStateInterval> kernelState = ss.queryFullState(start);
             for (ITmfStateInterval stateInterval : kernelState) {
                 int quark = stateInterval.getAttribute();
-                String tid = ss.getAttributeName(quark);
-                String procname = getProcessName(tid);
-                KernelMemoryUsageEntry obj = new KernelMemoryUsageEntry(tid, procname);
-                entryList.add(obj);
+                // If there is activity for a specific thread during an interval, we display it.
+                if (stateInterval.getEndTime() < end) {
+                    String tid = ss.getAttributeName(quark);
+                    String procname = getProcessName(tid);
+                    KernelMemoryUsageEntry obj = new KernelMemoryUsageEntry(tid, procname);
+                    entryList.add(obj);
+                }
             }
         } catch (StateSystemDisposedException e) {
             Activator.getDefault().logError(e.getMessage(), e);
