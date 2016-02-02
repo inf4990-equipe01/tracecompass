@@ -30,7 +30,7 @@ public class KernelMemoryAnalysisModule extends TmfStateSystemAnalysisModule {
     /**
      * Analysis ID, it should match that in the plugin.xml file
      */
-    public static final @NonNull String ID = "org.eclipse.linuxtools.lttng2.kernel.analysis.memory"; //$NON-NLS-1$
+    public static final @NonNull String ID = "org.eclipse.tracecompass.analysis.os.linux.core.kernelmemoryanalysismodule"; //$NON-NLS-1$
     @Override
     protected @NonNull ITmfStateProvider createStateProvider() {
         ITmfTrace trace = checkNotNull(getTrace());

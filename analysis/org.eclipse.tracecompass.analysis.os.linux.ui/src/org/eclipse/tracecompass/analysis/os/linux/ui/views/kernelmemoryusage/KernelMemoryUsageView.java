@@ -54,7 +54,7 @@ public class KernelMemoryUsageView extends TmfChartView {
     private Composite fXYViewerContainer;
 
     /** ID string */
-    public static final String ID = "org.eclipse.linuxtools.lttng2.kernel.memoryusage"; //$NON-NLS-1$
+    public static final String ID = "org.eclipse.tracecompass.analysis.os.linux.ui.kernelmemoryusageview"; //$NON-NLS-1$
 
     /**
      * Constructor
