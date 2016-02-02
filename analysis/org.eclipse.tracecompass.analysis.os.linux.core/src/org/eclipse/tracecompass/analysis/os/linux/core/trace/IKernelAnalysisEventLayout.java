@@ -289,7 +289,6 @@ public interface IKernelAnalysisEventLayout {
      * @since 2.0
      */
     String eventHRTimerExpireExit();
-
     /**
      * The kernel just allocated a page of memory.
      * <p>
@@ -310,6 +309,7 @@ public interface IKernelAnalysisEventLayout {
      * @since 2.0
      */
     String eventKmemPageFree();
+
 
     // ------------------------------------------------------------------------
     // Event field names
