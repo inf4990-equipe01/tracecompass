@@ -293,5 +293,4 @@ public class PerfEventLayout implements IKernelAnalysisEventLayout {
     public String fieldHRtimerNow() {
         return "now"; //$NON-NLS-1$
     }
-
 }
