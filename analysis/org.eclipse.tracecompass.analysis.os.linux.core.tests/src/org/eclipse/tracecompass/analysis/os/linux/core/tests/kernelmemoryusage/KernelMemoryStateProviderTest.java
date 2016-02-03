@@ -8,6 +8,7 @@
  *
  * Contributors:
  *   Geneviève Bastien - Initial API and implementation
+ *   Julien Daoust - Najib Arbaoui : Tests allocation et deallocation Kernel Memory
  *******************************************************************************/
 
 package org.eclipse.tracecompass.analysis.os.linux.core.tests.kernelmemoryusage;
@@ -19,9 +20,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -29,6 +30,7 @@ import org.eclipse.tracecompass.analysis.os.linux.core.kernelanalysis.KernelAnal
 import org.eclipse.tracecompass.analysis.os.linux.core.kernelmemoryusage.KernelMemoryAnalysisModule;
 import org.eclipse.tracecompass.analysis.os.linux.core.tests.Activator;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
+import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundException;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
@@ -48,14 +50,15 @@ import org.junit.Test;
 /**
  * Test suite for the {@link KernelMemoryAnalysisModule} class
  *
- * @author Geneviève Bastien
+ * @author Julien Daoust - Najib Arbaoui
  */
 public class KernelMemoryStateProviderTest {
 
     private static final String KERNEL_MEMORY_USAGE_FILE = "testfiles/kernelmemory_analysis.xml";
-
+    private static final long PAGE_SIZE = 4096;
     private ITmfTrace fTrace;
     private KernelMemoryAnalysisModule fModule = null;
+    private SortedMap<Long, Long> threadEvent = new TreeMap<>();
 
     private static void deleteSuppFiles(ITmfTrace trace) {
         /* Remove supplementary files */
@@ -125,44 +128,42 @@ public class KernelMemoryStateProviderTest {
     }
 
     /**
-     * Test that the state system is returned with the expected results
+     * Test allocation and deallocation of kernel Memory
      */
     @Test
-    public void testReturnedStateSystem() {
-//        TODO: ADD other tests to check if the allocation anlayse is correct
+    public void testAllocationDeallocationMemory() {
         fModule.schedule();
         fModule.waitForCompletion();
         ITmfStateSystem ss = fModule.getStateSystem();
         assertNotNull(ss);
         assertEquals(1L, ss.getStartTime());
-        assertEquals(25L, ss.getCurrentEndTime());
-        double [] totalKernelMemoryValues = new double[10];
-        double [] selectedThreadValues = new double[10];
-        Map<String, Double> lowestValues = new HashMap<>();
-        String fSelectedThread = "proc4";
-        for(int i=0;i<10;i++){
-        try {
-            List<ITmfStateInterval> kernelState = ss.queryFullState(5L);
-            for (ITmfStateInterval stateInterval : kernelState) {
-                long value = stateInterval.getStateValue().unboxLong();
-                totalKernelMemoryValues[i] += value;
+        assertEquals(30L, ss.getCurrentEndTime());
+        long totalMemory = 0;
 
-                int quark = stateInterval.getAttribute();
-                String tid = ss.getAttributeName(quark);
+        threadEvent.put(1L, PAGE_SIZE); // kmem_mm_page_alloc at timestamp = 1
+        threadEvent.put(2L, -PAGE_SIZE); // kmem_mm_page_free at timestamp = 2
+        threadEvent.put(3L, -PAGE_SIZE); // kmem_mm_page_free at timestamp = 3
+        threadEvent.put(17L, PAGE_SIZE); // kmem_mm_page_alloc at timestamp = 17
+        threadEvent.put(22L, -PAGE_SIZE); // kmem_mm_page_free at timestamp = 22
+        threadEvent.put(28L, -PAGE_SIZE); // kmem_mm_page_free at timestamp = 28
+        threadEvent.put(29L, PAGE_SIZE); // kmem_mm_page_alloc at timestamp = 29
+        threadEvent.put(30L, PAGE_SIZE); // kmem_mm_page_alloc at timestamp = 30
 
-                if (lowestValues.getOrDefault(tid, (double) 0) > value) {
-                    lowestValues.put(tid, (double) value);
-                }
+        // loop a Map and check if all allocation and deallocation of kernel memory are done proprely
+        for (Map.Entry<Long, Long> entry : threadEvent.entrySet()) {
+            try {
+                ITmfStateInterval kernelState = ss.querySingleState(entry.getKey(),0);
+                long value = kernelState.getStateValue().unboxLong();
+                totalMemory += entry.getValue();
+                assertEquals(value, totalMemory);
 
-                if (tid.equals(fSelectedThread)) {
-                    selectedThreadValues[i] = value;
-                }
+            } catch (StateSystemDisposedException | AttributeNotFoundException e) {
+
+                e.printStackTrace();
             }
 
-        } catch (StateSystemDisposedException e) {
-            fail(e.getMessage());
-        }}
-    }
+        }
 
+    }
 
 }
