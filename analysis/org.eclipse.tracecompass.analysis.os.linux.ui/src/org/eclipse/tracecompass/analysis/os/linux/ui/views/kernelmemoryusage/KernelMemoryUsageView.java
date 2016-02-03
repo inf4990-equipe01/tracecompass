@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   Samuel Gagnon & Mahdi Zolnouri- Initial implementation
+ *   Samuel Gagnon & Mahdi Zolnouri & Wassim Nasrallah - Initial implementation
  **********************************************************************/
 package org.eclipse.tracecompass.analysis.os.linux.ui.views.kernelmemoryusage;
 
@@ -32,6 +32,7 @@ import org.eclipse.tracecompass.tmf.core.signal.TmfSignalManager;
 import org.eclipse.tracecompass.tmf.core.signal.TmfTraceSelectedSignal;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
+import org.eclipse.tracecompass.tmf.ui.signal.TmfTimeViewAlignmentInfo;
 import org.eclipse.tracecompass.tmf.ui.signal.TmfTimeViewAlignmentSignal;
 import org.eclipse.tracecompass.tmf.ui.viewers.xycharts.TmfXYChartViewer;
 import org.eclipse.tracecompass.tmf.ui.views.TmfChartView;
@@ -41,6 +42,7 @@ import org.eclipse.tracecompass.tmf.ui.views.TmfChartView;
  *
  * @author Samuel Gagnon
  * @author Mahdi Zolnouri
+ * @author Wassim Nasrallah
  */
 public class KernelMemoryUsageView extends TmfChartView {
     private static final int[] DEFAULT_WEIGHTS = {1, 3};
@@ -62,6 +64,21 @@ public class KernelMemoryUsageView extends TmfChartView {
     public KernelMemoryUsageView() {
         super(Messages.MemoryUsageView_title);
     }
+
+    @Override
+    public TmfTimeViewAlignmentInfo getTimeViewAlignmentInfo() {
+        if (fSashForm == null) {
+            return null;
+        }
+
+        return new TmfTimeViewAlignmentInfo(fSashForm.getShell(), fSashForm.toDisplay(0, 0), getTimeAxisOffset());
+    }
+
+    private int getTimeAxisOffset() {
+        return fTreeViewer.getControl().getSize().x + fSashForm.getSashWidth() + fXYViewer.getPointAreaOffset();
+    }
+
+
 
     @Override
     protected TmfXYChartViewer createChartViewer(Composite parent) {
